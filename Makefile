@@ -2,6 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
+.PHONY: api-test clean clean-all clean-bin clean-db help test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -10,7 +11,10 @@ help: ## Show available targets
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "} {printf "  %-18s %s\n", $$1, $$2}'
 
-.PHONY: clean clean-all clean-bin clean-db help
+api-test: ## Test API
+	@$(MAKE) -C api test
+
+test: api-test ## Test all components
 
 clean: ## Clean binaries and Docker cache
 	@./.make/clean.sh

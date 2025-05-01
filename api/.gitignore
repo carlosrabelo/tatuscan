@@ -1,0 +1,17 @@
+# ============================================================================
+# GO
+# ============================================================================
+
+# Directories
+bin/*
+!bin/.gitkeep
+!bin/linux/
+bin/linux/*
+!bin/linux/.gitkeep
+
+# Files
+tatuscan-api
+*.db
+coverage.out
+coverage.html
+go.work

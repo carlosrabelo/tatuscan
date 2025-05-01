@@ -4,12 +4,17 @@ Inventário distribuído de máquinas.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
+## Destaques
+
+- Monorepo with an independent `api` Go module
+
 ## Estrutura do Projeto
 
 ```
 tatuscan/
-├── Makefile          # orquestrador apenas
-└── .make/            # helpers da raiz
+├── Makefile
+├── api/
+└── .make/
 ```
 
 English docs: [README.md](README.md).
