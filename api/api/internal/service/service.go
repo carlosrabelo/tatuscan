@@ -171,6 +171,57 @@ func (s *Service) CreateOrUpdate(ctx context.Context, data map[string]any) (mode
 	return inv, true, nil
 }
 
+// PartialUpdate updates activation fields only.
+func (s *Service) PartialUpdate(ctx context.Context, machineID string, data map[string]any) (model.Inventory, error) {
+	inv, err := s.GetByID(ctx, machineID)
+	if err != nil {
+		return model.Inventory{}, err
+	}
+
+	var updated []string
+	if _, ok := data["computer_activation"]; ok {
+		dt, err := s.parseDatetime(data["computer_activation"])
+		if err != nil {
+			return model.Inventory{}, err
+		}
+		inv.ComputerActivation = dt
+		updated = append(updated, "computer_activation")
+	}
+	if _, ok := data["activation_days"]; ok {
+		days, err := optionalInt(data["activation_days"])
+		if err != nil {
+			return model.Inventory{}, Validation("invalid activation_days")
+		}
+		inv.ActivationDays = days
+		updated = append(updated, "activation_days")
+	}
+	if len(updated) == 0 {
+		return model.Inventory{}, Validation("No valid fields provided for update")
+	}
+	for _, f := range updated {
+		if f != "computer_activation" {
+			now := time.Now().In(s.loc)
+			inv.UpdatedAt = &now
+			break
+		}
+	}
+	if err := s.store.Update(ctx, inv); err != nil {
+		return model.Inventory{}, Database(err.Error())
+	}
+	return inv, nil
+}
+
+// Delete removes an inventory.
+func (s *Service) Delete(ctx context.Context, machineID string) error {
+	if _, err := s.GetByID(ctx, machineID); err != nil {
+		return err
+	}
+	if err := s.store.Delete(ctx, machineID); err != nil {
+		return Database(err.Error())
+	}
+	return nil
+}
+
 // SerializeInventory converts inventory to API JSON map with TZ ISO times.
 func (s *Service) SerializeInventory(inv model.Inventory) map[string]any {
 	return map[string]any{
