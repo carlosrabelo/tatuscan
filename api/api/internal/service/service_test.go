@@ -147,3 +147,35 @@ func TestUpsertPreservesOptionalFields(t *testing.T) {
 		t.Fatalf("memory_used_mb cleared: %v", inv.MemoryUsedMB)
 	}
 }
+
+func TestGetDeleteNotFound(t *testing.T) {
+	svc := newTestService(t)
+	ctx := context.Background()
+	_, err := svc.GetByID(ctx, "missing")
+	if err == nil {
+		t.Fatal("expected not found")
+	}
+	if err := svc.Delete(ctx, "missing"); err == nil {
+		t.Fatal("expected not found on delete")
+	}
+}
+
+func TestPartialUpdateActivationOnly(t *testing.T) {
+	svc := newTestService(t)
+	ctx := context.Background()
+	_, _, err := svc.CreateOrUpdate(ctx, sampleData("m1", "host1"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	inv, err := svc.PartialUpdate(ctx, "m1", map[string]any{"computer_activation": "2020-01-15"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inv.ComputerActivation == nil {
+		t.Fatal("expected activation")
+	}
+	// only computer_activation → updated_at not bumped
+	if inv.UpdatedAt != nil {
+		t.Fatalf("updated_at should remain nil, got %v", inv.UpdatedAt)
+	}
+}
