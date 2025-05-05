@@ -15,6 +15,7 @@ Distributed machine inventory.
 | GET | `/api/health` | Health check |
 | GET | `/api/machines` | List inventory |
 | GET | `/api/inventory` | Alias of `/api/machines` |
+| POST | `/api/machines` | Create or update |
 
 ## Project Layout
 
