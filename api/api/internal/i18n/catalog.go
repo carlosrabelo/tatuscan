@@ -5,6 +5,7 @@ var en = map[string]string{
 	"err.invalid_json": "Invalid JSON body",
 	"msg.created": "Inventory added successfully",
 	"msg.updated": "Inventory updated successfully",
+	"msg.patched": "Inventory updated",
 }
 
 var pt = map[string]string{
@@ -12,4 +13,5 @@ var pt = map[string]string{
 	"err.invalid_json": "JSON inválido",
 	"msg.created": "Inventário adicionado com sucesso",
 	"msg.updated": "Inventário atualizado com sucesso",
+	"msg.patched": "Inventário atualizado",
 }

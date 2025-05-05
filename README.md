@@ -16,6 +16,7 @@ Distributed machine inventory.
 | GET | `/api/machines` | List inventory |
 | GET | `/api/inventory` | Alias of `/api/machines` |
 | POST | `/api/machines` | Create or update |
+| PATCH | `/api/machines/{id}` | Patch activation |
 
 ## Project Layout
 
