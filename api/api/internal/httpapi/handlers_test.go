@@ -49,3 +49,12 @@ func TestHealth(t *testing.T) {
 		t.Fatalf("health: %d", rr.Code)
 	}
 }
+
+func TestListEmpty(t *testing.T) {
+	h := newTestServer(t)
+	rr := httptest.NewRecorder()
+	h.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/api/machines", nil))
+	if rr.Code != 200 {
+		t.Fatalf("list: %d %s", rr.Code, rr.Body.String())
+	}
+}

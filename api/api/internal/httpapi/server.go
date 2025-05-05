@@ -53,6 +53,8 @@ func (s *Server) Handler() http.Handler { return s.mux }
 
 func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/health", s.health)
+	s.mux.HandleFunc("GET /api/machines", s.listMachines)
+	s.mux.HandleFunc("GET /api/inventory", s.listMachines)
 }
 
 func (s *Server) cat() i18n.Catalog {
