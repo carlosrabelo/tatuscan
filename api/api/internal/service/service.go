@@ -250,6 +250,41 @@ func (s *Service) VersionDistribution(ctx context.Context, topN int) ([]model.Ve
 	return top, nil
 }
 
+// AgeDistribution buckets machines by activation age in months.
+func (s *Service) AgeDistribution(ctx context.Context) ([]model.AgeCount, error) {
+	activations, err := s.store.Activations(ctx)
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now().In(s.loc)
+	ranges := []struct {
+		min, max float64
+		label    string
+		count    int
+	}{
+		{0, 12, "0–12", 0},
+		{12, 36, "12–36", 0},
+		{36, 60, "36–60", 0},
+		{60, 120, "60–120", 0},
+		{120, 9999, ">120", 0},
+	}
+	for _, act := range activations {
+		t := act.In(s.loc)
+		months := float64(now.Sub(t).Hours()/24) / 30.42
+		for i := range ranges {
+			if months >= ranges[i].min && months < ranges[i].max {
+				ranges[i].count++
+				break
+			}
+		}
+	}
+	out := make([]model.AgeCount, len(ranges))
+	for i, r := range ranges {
+		out[i] = model.AgeCount{Range: r.label, Count: r.count}
+	}
+	return out, nil
+}
+
 // SerializeInventory converts inventory to API JSON map with TZ ISO times.
 func (s *Service) SerializeInventory(inv model.Inventory) map[string]any {
 	return map[string]any{

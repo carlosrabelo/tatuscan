@@ -127,3 +127,11 @@ func (s *Server) statsVersions(w http.ResponseWriter, r *http.Request) {
 	}
 	s.writeJSON(w, http.StatusOK, map[string]any{"items": items, "top": topN})
 }
+func (s *Server) statsAge(w http.ResponseWriter, r *http.Request) {
+	items, err := s.svc.AgeDistribution(r.Context())
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	s.writeJSON(w, http.StatusOK, map[string]any{"items": items})
+}
