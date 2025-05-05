@@ -222,6 +222,11 @@ func (s *Service) Delete(ctx context.Context, machineID string) error {
 	return nil
 }
 
+// OSDistribution returns OS counts.
+func (s *Service) OSDistribution(ctx context.Context) ([]model.OSCount, error) {
+	return s.store.OSDistribution(ctx)
+}
+
 // SerializeInventory converts inventory to API JSON map with TZ ISO times.
 func (s *Service) SerializeInventory(inv model.Inventory) map[string]any {
 	return map[string]any{

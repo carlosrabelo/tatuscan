@@ -95,3 +95,11 @@ func (s *Server) deleteMachine(w http.ResponseWriter, r *http.Request) {
 	}
 	s.writeJSON(w, http.StatusOK, map[string]string{"message": s.cat().T("msg.deleted")})
 }
+func (s *Server) statsOS(w http.ResponseWriter, r *http.Request) {
+	items, err := s.svc.OSDistribution(r.Context())
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	s.writeJSON(w, http.StatusOK, map[string]any{"items": items})
+}
