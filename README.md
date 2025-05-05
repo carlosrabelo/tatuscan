@@ -4,16 +4,17 @@ Distributed machine inventory.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-## Highlights
+## Usage
 
-- Monorepo with an independent `api` Go module
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/health` | Health check |
 
 ## Project Layout
 
 ```
 tatuscan/
 ├── Makefile
-├── api/
 └── .make/
 ```
 
