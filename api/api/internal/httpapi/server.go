@@ -61,6 +61,7 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/stats/os", s.statsOS)
 	s.mux.HandleFunc("GET /api/stats/versions", s.statsVersions)
 	s.mux.HandleFunc("GET /api/stats/age", s.statsAge)
+	s.mux.HandleFunc("GET /api/stats/online", s.statsOnline)
 }
 
 func (s *Server) cat() i18n.Catalog {

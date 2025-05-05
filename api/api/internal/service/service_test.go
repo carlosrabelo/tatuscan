@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/carlosrabelo/tatuscan/api/api/internal/service"
 	"github.com/carlosrabelo/tatuscan/api/api/internal/store"
@@ -177,5 +178,51 @@ func TestPartialUpdateActivationOnly(t *testing.T) {
 	// only computer_activation → updated_at not bumped
 	if inv.UpdatedAt != nil {
 		t.Fatalf("updated_at should remain nil, got %v", inv.UpdatedAt)
+	}
+}
+
+func TestDistributions(t *testing.T) {
+	svc := newTestService(t)
+	ctx := context.Background()
+	hosts := []struct{ id, host, osName string }{
+		{"m1", "ha", "linux"},
+		{"m2", "hb", "linux"},
+		{"m3", "hc", "windows"},
+	}
+	for _, h := range hosts {
+		d := sampleData(h.id, h.host)
+		d["os"] = h.osName
+		d["os_version"] = h.osName + "-v"
+		d["computer_activation"] = "2018-06-01"
+		if _, _, err := svc.CreateOrUpdate(ctx, d); err != nil {
+			t.Fatal(err)
+		}
+	}
+	osDist, err := svc.OSDistribution(ctx)
+	if err != nil || len(osDist) < 2 {
+		t.Fatalf("os dist: %+v err=%v", osDist, err)
+	}
+	ver, err := svc.VersionDistribution(ctx, 8)
+	if err != nil || len(ver) < 2 {
+		t.Fatalf("ver dist: %+v err=%v", ver, err)
+	}
+	age, err := svc.AgeDistribution(ctx)
+	if err != nil || len(age) != 5 {
+		t.Fatalf("age dist: %+v err=%v", age, err)
+	}
+	total := 0
+	for _, a := range age {
+		total += a.Count
+	}
+	if total != 3 {
+		t.Fatalf("expected 3 aged machines, got %d", total)
+	}
+
+	online, err := svc.OnlineDistribution(ctx, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if online.Online != 3 || online.Offline != 0 {
+		t.Fatalf("online stats: %+v", online)
 	}
 }

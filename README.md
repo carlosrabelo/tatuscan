@@ -20,6 +20,7 @@ Distributed machine inventory.
 | GET | `/api/stats/os` | OS distribution |
 | GET | `/api/stats/versions?top=8` | Version distribution |
 | GET | `/api/stats/age` | Age buckets |
+| GET | `/api/stats/online?after=2h` | Online/offline counts |
 
 ## Project Layout
 
