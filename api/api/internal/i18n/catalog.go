@@ -6,6 +6,7 @@ var en = map[string]string{
 	"msg.created": "Inventory added successfully",
 	"msg.updated": "Inventory updated successfully",
 	"msg.patched": "Inventory updated",
+	"msg.deleted": "Inventory removed",
 }
 
 var pt = map[string]string{
@@ -14,4 +15,5 @@ var pt = map[string]string{
 	"msg.created": "Inventário adicionado com sucesso",
 	"msg.updated": "Inventário atualizado com sucesso",
 	"msg.patched": "Inventário atualizado",
+	"msg.deleted": "Inventário removido",
 }

@@ -86,3 +86,12 @@ func (s *Server) patchMachine(w http.ResponseWriter, r *http.Request) {
 		"item":    s.svc.SerializeInventory(inv),
 	})
 }
+func (s *Server) deleteMachine(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if err := s.svc.Delete(r.Context(), id); err != nil {
+		s.logger.Error("service error", "err", err)
+		s.writeError(w, err)
+		return
+	}
+	s.writeJSON(w, http.StatusOK, map[string]string{"message": s.cat().T("msg.deleted")})
+}
