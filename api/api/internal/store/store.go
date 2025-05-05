@@ -306,3 +306,27 @@ func (s *Store) VersionDistribution(ctx context.Context) ([]model.VersionCount, 
 	}
 	return out, rows.Err()
 }
+
+// Activations returns non-null computer_activation timestamps.
+func (s *Store) Activations(ctx context.Context) ([]time.Time, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT computer_activation FROM inventory
+		WHERE computer_activation IS NOT NULL AND computer_activation != ''`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []time.Time
+	for rows.Next() {
+		var raw string
+		if err := rows.Scan(&raw); err != nil {
+			return nil, err
+		}
+		t, err := parseStoredTime(raw, s.loc)
+		if err != nil {
+			continue
+		}
+		out = append(out, t)
+	}
+	return out, rows.Err()
+}

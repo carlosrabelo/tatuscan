@@ -19,6 +19,7 @@ Distributed machine inventory.
 | PATCH / DELETE | `/api/machines/{id}` | Patch activation / delete |
 | GET | `/api/stats/os` | OS distribution |
 | GET | `/api/stats/versions?top=8` | Version distribution |
+| GET | `/api/stats/age` | Age buckets |
 
 ## Project Layout
 
