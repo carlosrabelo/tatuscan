@@ -68,3 +68,21 @@ func (s *Server) createOrUpdate(w http.ResponseWriter, r *http.Request) {
 		"item":    s.svc.SerializeInventory(inv),
 	})
 }
+func (s *Server) patchMachine(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	data, err := decodeJSONBody(w, r)
+	if err != nil {
+		s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": s.cat().T("err.invalid_json")})
+		return
+	}
+	inv, err := s.svc.PartialUpdate(r.Context(), id, data)
+	if err != nil {
+		s.logger.Error("service error", "err", err)
+		s.writeError(w, err)
+		return
+	}
+	s.writeJSON(w, http.StatusOK, map[string]any{
+		"message": s.cat().T("msg.patched"),
+		"item":    s.svc.SerializeInventory(inv),
+	})
+}
