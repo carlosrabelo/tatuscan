@@ -227,6 +227,29 @@ func (s *Service) OSDistribution(ctx context.Context) ([]model.OSCount, error) {
 	return s.store.OSDistribution(ctx)
 }
 
+// VersionDistribution returns version counts with an optional "Other" bucket.
+func (s *Service) VersionDistribution(ctx context.Context, topN int) ([]model.VersionCount, error) {
+	if topN <= 0 {
+		topN = 8
+	}
+	all, err := s.store.VersionDistribution(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(all) <= topN {
+		return all, nil
+	}
+	top := all[:topN]
+	others := 0
+	for _, r := range all[topN:] {
+		others += r.Count
+	}
+	if others > 0 {
+		top = append(top, model.VersionCount{Version: "Other", Count: others})
+	}
+	return top, nil
+}
+
 // SerializeInventory converts inventory to API JSON map with TZ ISO times.
 func (s *Service) SerializeInventory(inv model.Inventory) map[string]any {
 	return map[string]any{
