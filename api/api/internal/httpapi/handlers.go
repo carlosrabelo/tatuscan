@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (s *Server) health(w http.ResponseWriter, r *http.Request) {
@@ -102,4 +103,27 @@ func (s *Server) statsOS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.writeJSON(w, http.StatusOK, map[string]any{"items": items})
+}
+func (s *Server) statsVersions(w http.ResponseWriter, r *http.Request) {
+	topN := 8
+	if v := r.URL.Query().Get("top"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			topN = n
+		}
+	}
+	if topN > 100 {
+		topN = 100
+	}
+	items, err := s.svc.VersionDistribution(r.Context(), topN)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	other := s.cat().T("stats.other")
+	for i := range items {
+		if items[i].Version == "Other" || items[i].Version == "Outros" {
+			items[i].Version = other
+		}
+	}
+	s.writeJSON(w, http.StatusOK, map[string]any{"items": items, "top": topN})
 }

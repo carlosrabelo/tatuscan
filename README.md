@@ -18,6 +18,7 @@ Distributed machine inventory.
 | POST | `/api/machines` | Create or update |
 | PATCH / DELETE | `/api/machines/{id}` | Patch activation / delete |
 | GET | `/api/stats/os` | OS distribution |
+| GET | `/api/stats/versions?top=8` | Version distribution |
 
 ## Project Layout
 

@@ -281,3 +281,28 @@ func (s *Store) OSDistribution(ctx context.Context) ([]model.OSCount, error) {
 	}
 	return out, rows.Err()
 }
+
+// VersionDistribution groups by os_version.
+func (s *Store) VersionDistribution(ctx context.Context) ([]model.VersionCount, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT os_version, COUNT(*) FROM inventory
+		GROUP BY os_version ORDER BY COUNT(*) DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []model.VersionCount
+	for rows.Next() {
+		var ver sql.NullString
+		var count int
+		if err := rows.Scan(&ver, &count); err != nil {
+			return nil, err
+		}
+		v := "-"
+		if ver.Valid && ver.String != "" {
+			v = ver.String
+		}
+		out = append(out, model.VersionCount{Version: v, Count: count})
+	}
+	return out, rows.Err()
+}
