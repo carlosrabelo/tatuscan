@@ -261,3 +261,23 @@ func nullStringPtr(ns sql.NullString) *string {
 	s := ns.String
 	return &s
 }
+
+// OSDistribution groups by OS.
+func (s *Store) OSDistribution(ctx context.Context) ([]model.OSCount, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT COALESCE(os, '-'), COUNT(*) FROM inventory
+		GROUP BY os ORDER BY COUNT(*) DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []model.OSCount
+	for rows.Next() {
+		var item model.OSCount
+		if err := rows.Scan(&item.OS, &item.Count); err != nil {
+			return nil, err
+		}
+		out = append(out, item)
+	}
+	return out, rows.Err()
+}

@@ -58,6 +58,7 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("POST /api/machines", s.createOrUpdate)
 	s.mux.HandleFunc("PATCH /api/machines/{id}", s.patchMachine)
 	s.mux.HandleFunc("DELETE /api/machines/{id}", s.deleteMachine)
+	s.mux.HandleFunc("GET /api/stats/os", s.statsOS)
 }
 
 func (s *Server) cat() i18n.Catalog {
