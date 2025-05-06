@@ -88,3 +88,22 @@ func TestInvalidJSON(t *testing.T) {
 		t.Fatalf("want 400, got %d %s", rr.Code, rr.Body.String())
 	}
 }
+
+func TestStatsOnline(t *testing.T) {
+	h := newTestServer(t)
+	body := map[string]any{
+		"machine_id": "abc", "hostname": "pc1", "ip": "10.0.0.1",
+		"os": "linux", "cpu_percent": 1.5, "memory_total_mb": 4096,
+	}
+	b, _ := json.Marshal(body)
+	rr := httptest.NewRecorder()
+	h.ServeHTTP(rr, httptest.NewRequest(http.MethodPost, "/api/machines", bytes.NewReader(b)))
+	if rr.Code != 201 {
+		t.Fatalf("create: %d", rr.Code)
+	}
+	rr = httptest.NewRecorder()
+	h.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/api/stats/online?after=1h", nil))
+	if rr.Code != 200 {
+		t.Fatalf("stats online: %d %s", rr.Code, rr.Body.String())
+	}
+}

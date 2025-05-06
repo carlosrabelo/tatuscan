@@ -285,6 +285,35 @@ func (s *Service) AgeDistribution(ctx context.Context) ([]model.AgeCount, error)
 	return out, nil
 }
 
+// OnlineDistribution counts machines by last-seen age against after.
+func (s *Service) OnlineDistribution(ctx context.Context, after time.Duration) (model.OnlineStats, error) {
+	if after <= 0 {
+		after = 2 * time.Hour
+	}
+	items, err := s.store.ListAll(ctx, "hostname", "asc")
+	if err != nil {
+		return model.OnlineStats{}, err
+	}
+	now := time.Now().In(s.loc)
+	var online, offline int
+	for _, inv := range items {
+		last := inv.CreatedAt
+		if inv.UpdatedAt != nil {
+			last = *inv.UpdatedAt
+		}
+		if now.Sub(last.In(s.loc)) > after {
+			offline++
+		} else {
+			online++
+		}
+	}
+	return model.OnlineStats{
+		Online:  online,
+		Offline: offline,
+		After:   after.String(),
+	}, nil
+}
+
 // SerializeInventory converts inventory to API JSON map with TZ ISO times.
 func (s *Service) SerializeInventory(inv model.Inventory) map[string]any {
 	return map[string]any{

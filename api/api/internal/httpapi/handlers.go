@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func (s *Server) health(w http.ResponseWriter, r *http.Request) {
@@ -134,4 +135,21 @@ func (s *Server) statsAge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.writeJSON(w, http.StatusOK, map[string]any{"items": items})
+}
+func (s *Server) statsOnline(w http.ResponseWriter, r *http.Request) {
+	after := s.offlineAfter
+	if v := r.URL.Query().Get("after"); v != "" {
+		d, err := time.ParseDuration(v)
+		if err != nil || d <= 0 {
+			s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": s.cat().T("err.invalid_after")})
+			return
+		}
+		after = d
+	}
+	stats, err := s.svc.OnlineDistribution(r.Context(), after)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	s.writeJSON(w, http.StatusOK, stats)
 }
