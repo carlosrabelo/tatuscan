@@ -107,3 +107,24 @@ func TestStatsOnline(t *testing.T) {
 		t.Fatalf("stats online: %d %s", rr.Code, rr.Body.String())
 	}
 }
+
+func TestAPITokenRequired(t *testing.T) {
+	h := newTestServerWithOpts(t, httpapi.Options{APIToken: "secret"})
+	body := map[string]any{
+		"machine_id": "abc", "hostname": "pc1", "ip": "10.0.0.1",
+		"os": "linux", "cpu_percent": 1.5, "memory_total_mb": 4096,
+	}
+	b, _ := json.Marshal(body)
+	rr := httptest.NewRecorder()
+	h.ServeHTTP(rr, httptest.NewRequest(http.MethodPost, "/api/machines", bytes.NewReader(b)))
+	if rr.Code != 401 {
+		t.Fatalf("want 401 without token, got %d", rr.Code)
+	}
+	rr = httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/machines", bytes.NewReader(b))
+	req.Header.Set("Authorization", "Bearer secret")
+	h.ServeHTTP(rr, req)
+	if rr.Code != 201 {
+		t.Fatalf("want 201 with token, got %d %s", rr.Code, rr.Body.String())
+	}
+}

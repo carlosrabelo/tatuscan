@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -55,13 +56,34 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/health", s.health)
 	s.mux.HandleFunc("GET /api/machines", s.listMachines)
 	s.mux.HandleFunc("GET /api/inventory", s.listMachines)
-	s.mux.HandleFunc("POST /api/machines", s.createOrUpdate)
-	s.mux.HandleFunc("PATCH /api/machines/{id}", s.patchMachine)
-	s.mux.HandleFunc("DELETE /api/machines/{id}", s.deleteMachine)
+	s.mux.HandleFunc("POST /api/machines", s.requireToken(s.createOrUpdate))
+	s.mux.HandleFunc("PATCH /api/machines/{id}", s.requireToken(s.patchMachine))
+	s.mux.HandleFunc("DELETE /api/machines/{id}", s.requireToken(s.deleteMachine))
 	s.mux.HandleFunc("GET /api/stats/os", s.statsOS)
 	s.mux.HandleFunc("GET /api/stats/versions", s.statsVersions)
 	s.mux.HandleFunc("GET /api/stats/age", s.statsAge)
 	s.mux.HandleFunc("GET /api/stats/online", s.statsOnline)
+}
+
+func (s *Server) requireToken(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if s.apiToken == "" {
+			next(w, r)
+			return
+		}
+		auth := r.Header.Get("Authorization")
+		const prefix = "Bearer "
+		if !strings.HasPrefix(auth, prefix) {
+			s.writeJSON(w, http.StatusUnauthorized, map[string]string{"error": s.cat().T("err.unauthorized")})
+			return
+		}
+		got := strings.TrimSpace(strings.TrimPrefix(auth, prefix))
+		if subtle.ConstantTimeCompare([]byte(got), []byte(s.apiToken)) != 1 {
+			s.writeJSON(w, http.StatusUnauthorized, map[string]string{"error": s.cat().T("err.unauthorized")})
+			return
+		}
+		next(w, r)
+	}
 }
 
 func (s *Server) cat() i18n.Catalog {
