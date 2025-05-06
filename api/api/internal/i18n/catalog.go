@@ -9,6 +9,7 @@ var en = map[string]string{
 	"msg.deleted":       "Inventory removed",
 	"stats.other":       "Other",
 	"err.invalid_after": "Invalid after duration",
+	"err.unauthorized":  "Unauthorized",
 }
 
 var pt = map[string]string{
@@ -20,4 +21,5 @@ var pt = map[string]string{
 	"msg.deleted":       "Inventário removido",
 	"stats.other":       "Outros",
 	"err.invalid_after": "Duração inválida para after",
+	"err.unauthorized":  "Não autorizado",
 }
