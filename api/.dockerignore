@@ -1,0 +1,19 @@
+# Build context is the api/ component root (see api/Dockerfile).
+
+# VCS / local env
+.git
+.gitignore
+.env
+.env.*
+
+# Build artifacts and local DB
+bin/
+*.db
+coverage.out
+coverage.html
+
+# Not needed for the image
+tools/
+*.md
+.dockerignore
+Dockerfile

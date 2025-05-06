@@ -2,7 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: clean fmt help lint test
+.PHONY: build clean fmt help lint run test
 
 BINARY_NAME := tatuscan-api
 export BINARY_NAME
@@ -14,8 +14,14 @@ help: ## Show available targets
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "} {printf "  %-15s %s\n", $$1, $$2}'
 
+build: ## Build Linux binary
+	@./.make/build.sh
+
 test: ## Run tests
 	@./.make/test.sh
+
+run: ## Run API locally
+	@./.make/local.sh
 
 lint: ## Run go vet
 	@go vet ./...

@@ -2,7 +2,8 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: api-test clean clean-all clean-bin clean-db help test
+.PHONY: api-build api-run api-test build clean \
+	clean-all clean-bin clean-db help test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -13,6 +14,15 @@ help: ## Show available targets
 
 api-test: ## Test API
 	@$(MAKE) -C api test
+
+api-build: ## Build API
+	@$(MAKE) -C api build
+
+api-run: ## Run API locally
+	@$(MAKE) -C api run
+
+build: api-build ## Build api
+	@echo "✓ Full build completed"
 
 test: api-test ## Test all components
 
