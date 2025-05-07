@@ -6,14 +6,16 @@ Inventário distribuído de máquinas.
 
 ## Destaques
 
+- Lightweight Go agent types for host inventory
 - REST API with SQLite persistence and upsert by `machine_id`
-- Monorepo with an independent `api` Go module
+- Monorepo with independent `client` and `api` Go modules
 
 ## Estrutura do Projeto
 
 ```
 tatuscan/
 ├── Makefile
+├── client/
 ├── api/
 └── .make/
 ```

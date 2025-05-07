@@ -6,8 +6,9 @@ Distributed machine inventory.
 
 ## Highlights
 
+- Lightweight Go agent types for host inventory
 - REST API with SQLite persistence and upsert by `machine_id`
-- Monorepo with an independent `api` Go module
+- Monorepo with independent `client` and `api` Go modules
 
 Binaries land in each component’s `bin/`:
 
@@ -32,6 +33,7 @@ Binaries land in each component’s `bin/`:
 ```
 tatuscan/
 ├── Makefile
+├── client/
 ├── api/
 └── .make/
 ```

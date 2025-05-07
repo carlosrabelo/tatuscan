@@ -1,0 +1,22 @@
+# ============================================================================
+# GO
+# ============================================================================
+
+# Directories
+bin/*
+!bin/.gitkeep
+!bin/linux/
+!bin/windows/
+bin/linux/*
+!bin/linux/.gitkeep
+bin/windows/*
+!bin/windows/.gitkeep
+build/
+
+# Files
+tatuscan
+tatuscan.exe
+*.msi
+coverage.out
+coverage.html
+go.work
