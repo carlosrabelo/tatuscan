@@ -6,6 +6,7 @@ Inventário distribuído de máquinas.
 
 ## Destaques
 
+- REST API with SQLite persistence and upsert by `machine_id`
 - Monorepo with an independent `api` Go module
 
 ## Estrutura do Projeto
