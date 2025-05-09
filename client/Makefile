@@ -2,7 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: clean fmt help lint test
+.PHONY: build build-all build-windows clean fmt help lint run test
 
 BINARY_NAME := tatuscan
 export BINARY_NAME
@@ -13,6 +13,18 @@ help: ## Show available targets
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "} {printf "  %-15s %s\n", $$1, $$2}'
+
+build: ## Build Linux binary
+	@./.make/build.sh linux
+
+build-windows: ## Build Windows binary
+	@./.make/build.sh windows
+
+build-all: ## Build all platforms
+	@./.make/build.sh all
+
+run: ## Run agent locally (one-shot; pass -d for daemon)
+	@./.make/local.sh $(ARGS)
 
 test: ## Run tests
 	@./.make/test.sh
