@@ -10,6 +10,7 @@ Inventário distribuído de máquinas.
 - Stable machine IDs from filtered physical MAC addresses (SHA-256)
 - REST API with SQLite persistence and upsert by `machine_id`
 - Monorepo with independent `client` and `api` Go modules
+- Separate HTML panel (in progress)
 
 ## Estrutura do Projeto
 
@@ -18,6 +19,7 @@ tatuscan/
 ├── Makefile
 ├── client/
 ├── api/
+├── web/
 └── .make/
 ```
 
