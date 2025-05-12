@@ -6,7 +6,7 @@ Inventário distribuído de máquinas.
 
 ## Destaques
 
-- Lightweight Go agent types for host inventory
+- Lightweight Go agent for Windows and Linux with optional OS service install
 - REST API with SQLite persistence and upsert by `machine_id`
 - Monorepo with independent `client` and `api` Go modules
 
