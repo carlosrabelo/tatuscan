@@ -2,7 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: build build-all build-windows clean fmt help lint run test
+.PHONY: build build-windows build-all clean fmt help install install-system lint run test uninstall
 
 BINARY_NAME := tatuscan
 export BINARY_NAME
@@ -39,3 +39,9 @@ clean: ## Remove build artifacts
 	@go clean
 	@rm -rf bin/linux/* bin/windows/*
 	@touch bin/linux/.gitkeep bin/windows/.gitkeep 2>/dev/null || true
+
+install: build ## Install agent as system service
+	@./.make/install.sh
+
+uninstall: ## Remove installed agent
+	@./.make/uninstall.sh
