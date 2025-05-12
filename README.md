@@ -7,6 +7,7 @@ Distributed machine inventory.
 ## Highlights
 
 - Lightweight Go agent for Windows and Linux with optional OS service install
+- Stable machine IDs from filtered physical MAC addresses (SHA-256)
 - REST API with SQLite persistence and upsert by `machine_id`
 - Monorepo with independent `client` and `api` Go modules
 
