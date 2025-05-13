@@ -37,7 +37,7 @@ func TestPages(t *testing.T) {
 		OfflineAfter: 2 * time.Hour,
 	}).Handler()
 
-	for _, path := range []string{"/healthz"} {
+	for _, path := range []string{"/healthz", "/"} {
 		rr := httptest.NewRecorder()
 		h.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, path, nil))
 		if rr.Code != 200 {
