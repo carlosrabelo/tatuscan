@@ -1,0 +1,50 @@
+{{define "content"}}
+<div class="card">
+  <p class="meta">{{.T "report.meta" (len .Inventories) .OfflineAfter}}</p>
+
+  {{if .Inventories}}
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>{{sortLink (.T "col.status") "status" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.hostname") "hostname" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.ip") "ip" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.os") "os" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.version") "os_version" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.model") "computer_model" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.cpu") "cpu_percent" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.ram") "memory_total_mb" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.activation") "computer_activation" .Sort .Direction}}</th>
+        <th>{{sortLink (.T "col.updated") "updated_at" .Sort .Direction}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Inventories}}
+      <tr>
+        <td>
+          {{if .Online}}
+          <span class="badge badge-online">{{$.T "status.online"}}</span>
+          {{else}}
+          <span class="badge badge-offline">{{$.T "status.offline"}}</span>
+          {{end}}
+        </td>
+        <td>{{.Hostname}}</td>
+        <td class="muted">{{if .IP}}{{.IP}}{{else}}-{{end}}</td>
+        <td>{{.OS}}</td>
+        <td class="muted">{{orStr .OSVersion "-"}}</td>
+        <td class="muted">{{orStr .ComputerModel "-"}}</td>
+        <td class="muted">{{fmtCPU .CPUPercent}}</td>
+        <td class="muted">{{fmtMem .MemoryUsedMB .MemoryTotalMB}}</td>
+        <td class="muted">{{fmtTime .ComputerActivation}}</td>
+        <td class="muted">{{fmtTime .UpdatedAt}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  </div>
+  {{else if not .Error}}
+    <div class="empty">{{.T "report.empty"}}</div>
+  {{end}}
+</div>
+{{end}}
