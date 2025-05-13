@@ -1,0 +1,57 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="{{.HTMLLang}}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{.Title}}</title>
+  <style>
+    :root { --bg:#f5f7fa; --card:#fff; --text:#2c3e50; --muted:#5c6b80; --line:#e5e7eb; }
+    body { margin:0; padding:24px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); }
+    a { color:#2563eb; text-decoration:none; }
+    header { display:flex; align-items:center; justify-content:space-between; margin:0 0 16px; gap:16px; flex-wrap:wrap; }
+    nav { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    nav a { display:inline-flex; align-items:center; padding:8px 18px; background:#2563eb; color:#fff; border-radius:999px; font-weight:600; box-shadow:0 4px 12px rgba(37,99,235,.18); transition:background .2s ease, box-shadow .2s ease, transform .2s ease; }
+    nav a:visited { color:#fff; }
+    nav a:hover { background:#1d4ed8; box-shadow:0 6px 18px rgba(29,78,216,.22); transform:translateY(-1px); }
+    nav a:focus-visible { outline:3px solid rgba(37,99,235,.4); outline-offset:2px; }
+    h1 { margin:0 0 16px; font-size: 1.6rem; }
+    .card { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+    .container { display:flex; gap:20px; flex-wrap:wrap; align-items:stretch; }
+    .box { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,.06); flex: 1 1 320px; min-width:280px; }
+    .box h2 { margin:0 0 12px; font-size:1.1rem; border-bottom:2px solid #3498db; padding-bottom:6px; }
+    table { width:100%; border-collapse:collapse; font-size:.95rem; }
+    th, td { padding:10px 8px; border-bottom:1px solid var(--line); text-align:left; }
+    th { background:#f8f9fa; font-weight:600; }
+    td.muted { color:var(--muted); }
+    .empty { padding:12px; text-align:center; color:var(--muted); font-style:italic; }
+    th a.sort-link { color: inherit; display: inline-flex; align-items: center; gap: 6px; }
+    th a.sort-link:hover { text-decoration: underline; }
+    .sort-indicator { font-size: 0.8em; color: var(--muted); opacity: 0.75; }
+    .charts { display:flex; flex-wrap:wrap; gap:20px; }
+    .chart-card { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,.06); flex:1 1 360px; min-width:300px; }
+    .chart-card h2 { margin:0 0 12px; font-size:1.1rem; border-bottom:2px solid #3498db; padding-bottom:6px; }
+    canvas { width:100% !important; height:320px !important; }
+    .banner-error { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; border-radius:10px; padding:12px 14px; margin:0 0 16px; }
+    .meta { margin:0 0 12px; color:var(--muted); font-size:.95rem; }
+    .table-wrap { overflow-x:auto; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:.8rem; font-weight:600; }
+    .badge-online { background:#dcfce7; color:#166534; }
+    .badge-offline { background:#fee2e2; color:#991b1b; }
+  </style>
+  {{block "extra_head" .}}{{end}}
+</head>
+<body>
+  <header>
+    <h1>{{.Header}}</h1>
+    <nav>
+      <a href="/">{{.T "nav.dashboard"}}</a>
+      <a href="/report/">{{.T "nav.report"}}</a>
+      <a href="/charts/">{{.T "nav.charts"}}</a>
+    </nav>
+  </header>
+  {{if .Error}}<div class="banner-error" role="alert">{{.Error}}</div>{{end}}
+  {{block "content" .}}{{end}}
+</body>
+</html>
+{{end}}
