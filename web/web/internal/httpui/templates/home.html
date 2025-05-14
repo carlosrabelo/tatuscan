@@ -1,0 +1,91 @@
+{{define "content"}}
+<div class="container">
+  <div class="box">
+    <h2>{{.T "home.fleet"}}</h2>
+    {{if or (gt .OnlineStats.Online 0) (gt .OnlineStats.Offline 0)}}
+      <table>
+        <tbody>
+          <tr><th>{{.T "home.online"}}</th><td><span class="badge badge-online">{{.OnlineStats.Online}}</span></td></tr>
+          <tr><th>{{.T "home.offline"}}</th><td><span class="badge badge-offline">{{.OnlineStats.Offline}}</span></td></tr>
+          <tr><th>{{.T "home.limit"}}</th><td class="muted">{{.T "home.threshold" .OfflineAfter}}</td></tr>
+        </tbody>
+      </table>
+    {{else if not .Error}}
+      <p class="empty">{{.T "home.empty_fleet"}}</p>
+    {{end}}
+  </div>
+
+  <div class="box">
+    <h2>{{.T "home.os"}}</h2>
+    {{if .OSList}}
+      <table>
+        <thead>
+          <tr><th>{{.T "home.col_name"}}</th><th>{{.T "home.col_count"}}</th></tr>
+        </thead>
+        <tbody>
+          {{range .OSList}}
+          <tr>
+            <td>{{if .OS}}{{.OS}}{{else}}-{{end}}</td>
+            <td>{{.Count}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    {{else if not .Error}}
+      <p class="empty">{{.T "home.empty_os"}}</p>
+    {{end}}
+  </div>
+
+  <div class="box">
+    <h2>{{.T "home.versions"}}</h2>
+    {{if .VersionList}}
+      <table>
+        <thead>
+          <tr><th>{{.T "home.col_name"}}</th><th>{{.T "home.col_count"}}</th></tr>
+        </thead>
+        <tbody>
+          {{range .VersionList}}
+          <tr>
+            <td>{{if .Version}}{{.Version}}{{else}}-{{end}}</td>
+            <td>{{.Count}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    {{else if not .Error}}
+      <p class="empty">{{.T "home.empty_ver"}}</p>
+    {{end}}
+  </div>
+
+  <div class="box">
+    <h2>{{.T "home.age"}}</h2>
+    {{if gt .AgeStats.Count 0}}
+      <table>
+        <tbody>
+          <tr><th>{{.T "home.age_total"}}</th><td>{{.AgeStats.Count}}</td></tr>
+          <tr><th>{{.T "home.age_avg"}}</th><td>{{.AgeStats.Average}}</td></tr>
+          <tr><th>{{.T "home.age_min"}}</th><td>{{.AgeStats.Min}}</td></tr>
+          <tr><th>{{.T "home.age_max"}}</th><td>{{.AgeStats.Max}}</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin:16px 0 8px; font-size:1rem;">{{.T "home.age_dist"}}</h3>
+      <table>
+        <thead><tr><th>{{.T "home.age_range"}}</th><th>{{.T "home.age_qty"}}</th></tr></thead>
+        <tbody>
+          {{range .AgeRanges}}
+          <tr>
+            <td>
+              {{if eq .Max 9999}}&gt;{{.Min}}
+              {{else}}{{.Min}}–{{.Max}}{{end}}
+            </td>
+            <td>{{.Count}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    {{else if not .Error}}
+      <p class="empty">{{.T "home.empty_age"}}</p>
+    {{end}}
+  </div>
+</div>
+{{end}}
