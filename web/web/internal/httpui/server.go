@@ -112,7 +112,7 @@ func NewWithFS(api *apiclient.Client, tmplFS fs.FS, logger *slog.Logger, opts Op
 				template.HTMLEscapeString(label) + `</span>` + indicator + `</a>`)
 		},
 	}
-	for _, page := range []string{"home", "report"} {
+	for _, page := range []string{"home", "report", "charts"} {
 		t, err := template.New("base").Funcs(s.funcs).ParseFS(s.tmplFS, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			panic("parse templates/" + page + ".html: " + err.Error())
@@ -130,6 +130,8 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /{$}", s.home)
 	s.mux.HandleFunc("GET /report/{$}", s.report)
 	s.mux.HandleFunc("GET /report", s.report)
+	s.mux.HandleFunc("GET /charts/{$}", s.charts)
+	s.mux.HandleFunc("GET /charts", s.charts)
 	s.mux.HandleFunc("GET /healthz", s.healthz)
 }
 
