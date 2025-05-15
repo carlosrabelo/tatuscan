@@ -2,8 +2,8 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build \
-	client-build-all client-build-windows client-run client-test help test web-build web-run web-test
+.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build client-build-all \
+	client-build-windows client-run client-test help local-start local-stop local-test test web-build web-run web-test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -44,6 +44,15 @@ web-build: ## Build web panel
 
 web-run: ## Run web panel locally
 	@$(MAKE) -C web run
+
+local-start: ## Start API+web locally (no Docker)
+	@./.make/local.sh start
+
+local-test: ## Unit tests + HTTP smoke against local API+web (no Docker)
+	@./.make/local.sh test
+
+local-stop: ## Stop API+web started by make local-start
+	@./.make/local.sh stop
 
 build: client-build api-build web-build ## Build client + api + web
 	@echo "✓ Full build completed"
