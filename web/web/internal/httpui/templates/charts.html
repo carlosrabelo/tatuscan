@@ -1,0 +1,82 @@
+{{define "extra_head"}}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+{{end}}
+
+{{define "content"}}
+<div class="charts">
+  <div class="chart-card">
+    <h2>{{.T "charts.os"}}</h2>
+    <canvas id="osChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <h2>{{.T "charts.versions" .TopN}}</h2>
+    <canvas id="verChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <h2>{{.T "charts.age"}}</h2>
+    <canvas id="ageChart"></canvas>
+  </div>
+</div>
+
+<script>
+  const osLabels = {{json .OSLabels}};
+  const osValues = {{json .OSValues}};
+  const verLabels = {{json .VerLabels}};
+  const verValues = {{json .VerValues}};
+  const ageLabels = {{json .AgeLabels}};
+  const ageValues = {{json .AgeValues}};
+
+  const commonOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+    scales: {
+      x: { ticks: { precision: 0 } },
+      y: { ticks: { precision: 0 } }
+    }
+  };
+
+  new Chart(document.getElementById('osChart'), {
+    type: 'bar',
+    data: {
+      labels: osLabels,
+      datasets: [{
+        data: osValues,
+        backgroundColor: '#2563eb',
+        borderRadius: 6,
+      }]
+    },
+    options: { ...commonOptions, indexAxis: 'y' }
+  });
+
+  new Chart(document.getElementById('verChart'), {
+    type: 'bar',
+    data: {
+      labels: verLabels,
+      datasets: [{
+        data: verValues,
+        backgroundColor: '#7c3aed',
+        borderRadius: 6,
+      }]
+    },
+    options: { ...commonOptions, indexAxis: 'y' }
+  });
+
+  new Chart(document.getElementById('ageChart'), {
+    type: 'bar',
+    data: {
+      labels: ageLabels,
+      datasets: [{
+        data: ageValues,
+        backgroundColor: '#059669',
+        borderRadius: 6,
+      }]
+    },
+    options: commonOptions
+  });
+</script>
+{{end}}

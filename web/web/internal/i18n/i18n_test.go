@@ -9,7 +9,13 @@ func TestParseAndT(t *testing.T) {
 	if Parse("en-US") != EN {
 		t.Fatal("en-US")
 	}
-	if New(EN).T("error.api_down") == "error.api_down" {
-		t.Fatal("missing error.api_down")
+	if New(PT).T("nav.report") != "Relatório" {
+		t.Fatal(New(PT).T("nav.report"))
+	}
+	if New(EN).T("nav.report") != "Report" {
+		t.Fatal(New(EN).T("nav.report"))
+	}
+	if New(PT).T("home.threshold", "2h0m0s") != "2h0m0s sem check-in" {
+		t.Fatal(New(PT).T("home.threshold", "2h0m0s"))
 	}
 }
