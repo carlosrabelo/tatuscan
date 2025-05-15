@@ -1,0 +1,17 @@
+# Build context is the web/ component root (see web/Dockerfile).
+
+# VCS / local env
+.git
+.gitignore
+.env
+.env.*
+
+# Build artifacts
+bin/
+coverage.out
+coverage.html
+
+# Not needed for the image
+*.md
+.dockerignore
+Dockerfile

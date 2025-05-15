@@ -9,8 +9,9 @@ Inventário distribuído de máquinas.
 - Lightweight Go agent for Windows and Linux with optional OS service install
 - Stable machine IDs from filtered physical MAC addresses (SHA-256)
 - REST API with SQLite persistence and upsert by `machine_id`
-- Monorepo with independent `client` and `api` Go modules
-- Separate HTML panel (in progress)
+- Separate HTML panel for OS, version, and hardware-age views
+- English/Portuguese UI (i18n) via `TATUSCAN_LANG` in `.env` (`en` or `pt`)
+- Monorepo with independent `client`, `api`, and `web` Go modules
 
 ## Estrutura do Projeto
 

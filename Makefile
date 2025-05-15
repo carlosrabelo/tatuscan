@@ -2,8 +2,8 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db \
-	client-build client-build-all client-build-windows client-run client-test help test web-test
+.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build \
+	client-build-all client-build-windows client-run client-test help test web-build web-run web-test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -39,7 +39,13 @@ client-run: ## Run client agent locally
 web-test: ## Test web panel
 	@$(MAKE) -C web test
 
-build: client-build api-build ## Build client + api
+web-build: ## Build web panel
+	@$(MAKE) -C web build
+
+web-run: ## Run web panel locally
+	@$(MAKE) -C web run
+
+build: client-build api-build web-build ## Build client + api + web
 	@echo "✓ Full build completed"
 
 test: client-test api-test web-test ## Test all components
