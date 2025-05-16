@@ -21,6 +21,7 @@ tatuscan/
 ├── client/
 ├── api/
 ├── web/
+├── tools/
 └── .make/
 ```
 

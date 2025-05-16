@@ -1,0 +1,18 @@
+# ============================================================================
+# GO
+# ============================================================================
+
+# Directories
+bin/*
+!bin/.gitkeep
+!bin/linux/
+bin/linux/*
+!bin/linux/.gitkeep
+
+# Files
+add-manual-inventory
+delete-older
+update-activation
+coverage.out
+coverage.html
+go.work
