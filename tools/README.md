@@ -1,15 +1,24 @@
 # TatuScan tools
 
-HTTP admin CLIs against the TatuScan API.
+HTTP admin CLIs against the TatuScan API (`TATUSCAN_URL`, default `http://localhost:8040`).
 
 Portuguese: [README-PT.md](README-PT.md).
 
 ## Highlights
 
-- Shared HTTP client (none yet)
+- Standalone Go binaries (no Python)
+- Shared HTTP client with `/machines` → `/inventory` fallback
+- Optional `TATUSCAN_API_TOKEN` Bearer on write operations
 
-## Development
+## Usage
 
 ```bash
-make test
+make build
+export TATUSCAN_URL=http://localhost:8040
+
+./bin/linux/add-manual-inventory --hostname IFMT-1234 --os "Chrome OS"
 ```
+
+| Binary | Purpose |
+|--------|---------|
+| `add-manual-inventory` | POST a manual inventory row |
