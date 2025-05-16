@@ -18,6 +18,7 @@ Binaries land in each component’s `bin/`:
 - `client/bin/linux/tatuscan`
 - `api/bin/linux/tatuscan-api`
 - `web/bin/linux/tatuscan-web`
+- `tools/bin/linux/ — add-manual-inventory, delete-older, update-activation`
 
 ## Usage
 
