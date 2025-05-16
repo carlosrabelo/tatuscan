@@ -10,7 +10,7 @@ cd "$ROOT_DIR"
 mkdir -p "$BIN_DIR/linux"
 
 tools=(
-
+  add-manual-inventory
 )
 
 for name in "${tools[@]}"; do
