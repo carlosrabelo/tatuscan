@@ -1,0 +1,8 @@
+# Namespace for TatuScan deployment
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tatuscan
+  labels:
+    name: tatuscan
+    app: tatuscan
