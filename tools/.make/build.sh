@@ -11,6 +11,7 @@ mkdir -p "$BIN_DIR/linux"
 
 tools=(
   add-manual-inventory
+  delete-older
 )
 
 for name in "${tools[@]}"; do

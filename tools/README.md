@@ -17,8 +17,10 @@ make build
 export TATUSCAN_URL=http://localhost:8040
 
 ./bin/linux/add-manual-inventory --hostname IFMT-1234 --os "Chrome OS"
+./bin/linux/delete-older --dry-run
 ```
 
 | Binary | Purpose |
 |--------|---------|
 | `add-manual-inventory` | POST a manual inventory row |
+| `delete-older` | DELETE older hostname duplicates |
