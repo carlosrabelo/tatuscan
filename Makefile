@@ -2,8 +2,8 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build client-build-all client-build-windows \
-	client-run client-test help local-start local-stop local-test test tools-build tools-test web-build web-run web-test
+.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build client-build-all client-build-windows client-run client-test deploy-docker \
+	help local-start local-stop local-test stack-build stack-logs stack-start stack-stop test tools-build tools-test web-build web-run web-test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -59,6 +59,21 @@ local-test: ## Unit tests + HTTP smoke against local API+web (no Docker)
 
 local-stop: ## Stop API+web started by make local-start
 	@./.make/local.sh stop
+
+stack-build: ## Build Docker images (api+web)
+	@cd deploy/docker && docker compose build
+
+stack-start: stack-build ## Start api+web via Docker Compose
+	@cd deploy/docker && docker compose up -d
+
+stack-stop: ## Stop Docker Compose stack
+	@cd deploy/docker && docker compose down
+
+stack-logs: ## Follow Docker Compose logs
+	@cd deploy/docker && docker compose logs -f --tail=200
+
+deploy-docker: ## Deploy via Docker
+	@$(MAKE) -C deploy quick-docker
 
 build: client-build api-build web-build tools-build ## Build client + api + web + tools
 	@echo "✓ Full build completed"

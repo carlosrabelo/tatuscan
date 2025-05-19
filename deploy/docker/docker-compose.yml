@@ -1,0 +1,53 @@
+services:
+  api:
+    build:
+      context: ../../api
+      dockerfile: Dockerfile
+    image: ${API_IMAGE:-carlosrabelo/tatuscan-api:latest}
+    container_name: tatuscan-api
+    environment:
+      - TATUSCAN_PORT=8040
+      - TATUSCAN_DB_DIR=/data
+      - TATUSCAN_DB_FILE=tatuscan.db
+      - TIMEZONE=${TIMEZONE:-America/Cuiaba}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - TATUSCAN_API_TOKEN=${TATUSCAN_API_TOKEN:-}
+      - TATUSCAN_OFFLINE_AFTER=${TATUSCAN_OFFLINE_AFTER:-2h}
+      - TATUSCAN_LANG=${TATUSCAN_LANG:-en}
+    ports:
+      - "${API_HOST_PORT:-8040}:8040"
+    volumes:
+      - tatuscan_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8040/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ../../web
+      dockerfile: Dockerfile
+    image: ${WEB_IMAGE:-carlosrabelo/tatuscan-web:latest}
+    container_name: tatuscan-web
+    environment:
+      - TATUSCAN_PORT=8050
+      - TATUSCAN_API_URL=http://api:8040
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - TATUSCAN_OFFLINE_AFTER=${TATUSCAN_OFFLINE_AFTER:-2h}
+      - TATUSCAN_LANG=${TATUSCAN_LANG:-en}
+    ports:
+      - "${WEB_HOST_PORT:-8050}:8050"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8050/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  tatuscan_data:

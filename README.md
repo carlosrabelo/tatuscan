@@ -43,6 +43,7 @@ tatuscan/
 ├── api/
 ├── web/
 ├── tools/
+├── deploy/
 └── .make/
 ```
 
