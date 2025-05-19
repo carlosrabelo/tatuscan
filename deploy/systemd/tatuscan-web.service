@@ -1,0 +1,18 @@
+[Unit]
+Description=TatuScan Web Panel Service
+After=network.target tatuscan-api.service
+Wants=tatuscan-api.service
+
+[Service]
+Type=simple
+User=tatuscan
+WorkingDirectory=/opt/tatuscan
+Environment=TATUSCAN_PORT=8050
+Environment=TATUSCAN_API_URL=http://127.0.0.1:8040
+Environment=LOG_LEVEL=INFO
+ExecStart=/opt/tatuscan/bin/tatuscan-web
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
