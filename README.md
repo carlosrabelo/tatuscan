@@ -47,6 +47,8 @@ tatuscan/
 └── .make/
 ```
 
+Deploy details: [deploy/README.md](deploy/README.md).
+
 Portuguese docs: [README-PT.md](README-PT.md).
 
 ## License
