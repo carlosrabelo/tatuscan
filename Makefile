@@ -2,8 +2,8 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build client-build-all client-build-windows client-run client-test deploy-docker \
-	deploy-k8s help local-start local-stop local-test stack-build stack-logs stack-start stack-stop test tools-build tools-test web-build web-run web-test
+.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build client-build-all client-build-windows client-run client-test deploy-docker deploy-k8s \
+	deploy-systemd help local-start local-stop local-test stack-build stack-logs stack-start stack-stop test tools-build tools-test web-build web-run web-test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -77,6 +77,9 @@ deploy-docker: ## Deploy via Docker
 
 deploy-k8s: ## Deploy to Kubernetes
 	@$(MAKE) -C deploy quick-k8s
+
+deploy-systemd: ## Install systemd services
+	@$(MAKE) -C deploy quick-systemd
 
 build: client-build api-build web-build tools-build ## Build client + api + web + tools
 	@echo "✓ Full build completed"

@@ -1,0 +1,19 @@
+[Unit]
+Description=TatuScan API Service
+After=network.target
+
+[Service]
+Type=simple
+User=tatuscan
+WorkingDirectory=/opt/tatuscan
+Environment=TATUSCAN_PORT=8040
+Environment=TATUSCAN_DB_DIR=/var/lib/tatuscan
+Environment=TATUSCAN_DB_FILE=tatuscan.db
+Environment=TIMEZONE=America/Cuiaba
+Environment=LOG_LEVEL=INFO
+ExecStart=/opt/tatuscan/bin/tatuscan-api
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
