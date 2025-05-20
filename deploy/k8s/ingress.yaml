@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tatuscan-ingress
+  namespace: tatuscan
+spec:
+  rules:
+  - host: tatuscan.local
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: tatuscan-api
+            port:
+              number: 8040
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tatuscan-web
+            port:
+              number: 8050

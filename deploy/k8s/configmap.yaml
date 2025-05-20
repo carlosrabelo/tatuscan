@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tatuscan-config
+  namespace: tatuscan
+data:
+  TATUSCAN_PORT: "8040"
+  LOG_LEVEL: "INFO"
+  TATUSCAN_DB_DIR: "/data"
+  TATUSCAN_DB_FILE: "tatuscan.db"
+  TIMEZONE: "America/Cuiaba"
+  TATUSCAN_API_URL: "http://tatuscan-api:8040"
+  TATUSCAN_OFFLINE_AFTER: "2h"
+  TATUSCAN_LANG: "en"
