@@ -161,6 +161,75 @@ func (s *Store) Delete(ctx context.Context, machineID string) error {
 	return nil
 }
 
+// OSDistribution groups by OS.
+func (s *Store) OSDistribution(ctx context.Context) ([]model.OSCount, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT COALESCE(os, '-'), COUNT(*) FROM inventory
+		GROUP BY os ORDER BY COUNT(*) DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []model.OSCount
+	for rows.Next() {
+		var item model.OSCount
+		if err := rows.Scan(&item.OS, &item.Count); err != nil {
+			return nil, err
+		}
+		out = append(out, item)
+	}
+	return out, rows.Err()
+}
+
+// VersionDistribution groups by os_version.
+func (s *Store) VersionDistribution(ctx context.Context) ([]model.VersionCount, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT os_version, COUNT(*) FROM inventory
+		GROUP BY os_version ORDER BY COUNT(*) DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []model.VersionCount
+	for rows.Next() {
+		var ver sql.NullString
+		var count int
+		if err := rows.Scan(&ver, &count); err != nil {
+			return nil, err
+		}
+		v := "-"
+		if ver.Valid && ver.String != "" {
+			v = ver.String
+		}
+		out = append(out, model.VersionCount{Version: v, Count: count})
+	}
+	return out, rows.Err()
+}
+
+// Activations returns non-null computer_activation timestamps.
+func (s *Store) Activations(ctx context.Context) ([]time.Time, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT computer_activation FROM inventory
+		WHERE computer_activation IS NOT NULL AND computer_activation != ''`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []time.Time
+	for rows.Next() {
+		var raw string
+		if err := rows.Scan(&raw); err != nil {
+			return nil, err
+		}
+		t, err := parseStoredTime(raw, s.loc)
+		if err != nil {
+			continue
+		}
+		out = append(out, t)
+	}
+	return out, rows.Err()
+}
+
 type scannable interface {
 	Scan(dest ...any) error
 }
@@ -260,73 +329,4 @@ func nullStringPtr(ns sql.NullString) *string {
 	}
 	s := ns.String
 	return &s
-}
-
-// OSDistribution groups by OS.
-func (s *Store) OSDistribution(ctx context.Context) ([]model.OSCount, error) {
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT COALESCE(os, '-'), COUNT(*) FROM inventory
-		GROUP BY os ORDER BY COUNT(*) DESC`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var out []model.OSCount
-	for rows.Next() {
-		var item model.OSCount
-		if err := rows.Scan(&item.OS, &item.Count); err != nil {
-			return nil, err
-		}
-		out = append(out, item)
-	}
-	return out, rows.Err()
-}
-
-// VersionDistribution groups by os_version.
-func (s *Store) VersionDistribution(ctx context.Context) ([]model.VersionCount, error) {
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT os_version, COUNT(*) FROM inventory
-		GROUP BY os_version ORDER BY COUNT(*) DESC`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var out []model.VersionCount
-	for rows.Next() {
-		var ver sql.NullString
-		var count int
-		if err := rows.Scan(&ver, &count); err != nil {
-			return nil, err
-		}
-		v := "-"
-		if ver.Valid && ver.String != "" {
-			v = ver.String
-		}
-		out = append(out, model.VersionCount{Version: v, Count: count})
-	}
-	return out, rows.Err()
-}
-
-// Activations returns non-null computer_activation timestamps.
-func (s *Store) Activations(ctx context.Context) ([]time.Time, error) {
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT computer_activation FROM inventory
-		WHERE computer_activation IS NOT NULL AND computer_activation != ''`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var out []time.Time
-	for rows.Next() {
-		var raw string
-		if err := rows.Scan(&raw); err != nil {
-			return nil, err
-		}
-		t, err := parseStoredTime(raw, s.loc)
-		if err != nil {
-			continue
-		}
-		out = append(out, t)
-	}
-	return out, rows.Err()
 }
