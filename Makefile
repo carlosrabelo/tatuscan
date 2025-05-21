@@ -2,8 +2,11 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db client-build client-build-all client-build-windows client-run client-test deploy-docker deploy-k8s \
-	deploy-systemd help local-start local-stop local-test stack-build stack-logs stack-start stack-stop test tools-build tools-test web-build web-run web-test
+.PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db \
+	client-build client-build-all client-build-windows client-run client-test \
+	deploy-docker deploy-k8s deploy-systemd help local-start local-stop local-test \
+	stack-build stack-logs stack-start stack-stop test tools-build tools-test \
+	web-build web-run web-test
 
 help: ## Show available targets
 	@echo "tatuscan - Available targets"
@@ -12,17 +15,8 @@ help: ## Show available targets
 		| sort \
 		| awk 'BEGIN {FS = ":.*## "} {printf "  %-18s %s\n", $$1, $$2}'
 
-api-test: ## Test API
-	@$(MAKE) -C api test
-
-api-build: ## Build API
-	@$(MAKE) -C api build
-
-api-run: ## Run API locally
-	@$(MAKE) -C api run
-
-client-test: ## Test client
-	@$(MAKE) -C client test
+build: client-build api-build web-build tools-build ## Build client + api + web + tools
+	@echo "✓ Full build completed"
 
 client-build: ## Build client (Linux)
 	@$(MAKE) -C client build
@@ -36,20 +30,34 @@ client-build-all: ## Build client (all platforms)
 client-run: ## Run client agent locally
 	@$(MAKE) -C client run ARGS='$(ARGS)'
 
-web-test: ## Test web panel
-	@$(MAKE) -C web test
+client-test: ## Test client
+	@$(MAKE) -C client test
+
+api-build: ## Build API
+	@$(MAKE) -C api build
+
+api-test: ## Test API
+	@$(MAKE) -C api test
+
+api-run: ## Run API locally
+	@$(MAKE) -C api run
 
 web-build: ## Build web panel
 	@$(MAKE) -C web build
 
+web-test: ## Test web panel
+	@$(MAKE) -C web test
+
 web-run: ## Run web panel locally
 	@$(MAKE) -C web run
+
+tools-build: ## Build admin tools
+	@$(MAKE) -C tools build
 
 tools-test: ## Test admin tools
 	@$(MAKE) -C tools test
 
-tools-build: ## Build admin tools
-	@$(MAKE) -C tools build
+test: client-test api-test web-test tools-test ## Test all components
 
 local-start: ## Start API+web locally (no Docker)
 	@./.make/local.sh start
@@ -80,11 +88,6 @@ deploy-k8s: ## Deploy to Kubernetes
 
 deploy-systemd: ## Install systemd services
 	@$(MAKE) -C deploy quick-systemd
-
-build: client-build api-build web-build tools-build ## Build client + api + web + tools
-	@echo "✓ Full build completed"
-
-test: client-test api-test web-test tools-test ## Test all components
 
 clean: ## Clean binaries and Docker cache
 	@./.make/clean.sh
