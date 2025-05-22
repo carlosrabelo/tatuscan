@@ -31,9 +31,9 @@ export TATUSCAN_URL=http://localhost:8040
 
 ## Configuration
 
-- `TATUSCAN_URL` — API host ( `/api` is appended when missing)
+- `TATUSCAN_URL` — API host (`/api` is appended when missing); preferred when set
 - `TATUSCAN_API_TOKEN` — Bearer token for POST / PATCH / DELETE
-- `--api-base` — override the URL without using the environment
+- `--api-base` — used only when `TATUSCAN_URL` is unset (then default `http://localhost:8040/api`)
 - `TATUSCAN_LANG` — CLI language (`en` or `pt`; default `en`) in `.env`
 
 ## Development
