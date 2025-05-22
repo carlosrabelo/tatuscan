@@ -86,21 +86,16 @@ func CollectData() (MachineInfo, error) {
 			if err != nil {
 				continue
 			}
-			for _, addr := range addrs {
-				if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() && ipnet.IP.To4() != nil {
-					ipAddress = ipnet.IP.String()
-					Log.Debugf("IP found: %s", ipAddress)
-					break
-				}
-			}
-			if ipAddress != "" {
+			if selected, ok := hasEligibleIP(addrs); ok {
+				ipAddress = selected
+				Log.Debugf("IP found: %s", ipAddress)
 				break
 			}
 		}
 	}
 
 	if ipAddress == "" {
-		Log.Warnf("No valid IPv4 address found")
+		Log.Warnf("No eligible IP address found")
 	}
 	info.IP = ipAddress
 
