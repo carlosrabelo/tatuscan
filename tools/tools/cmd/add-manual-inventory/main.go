@@ -12,6 +12,9 @@ import (
 	"github.com/carlosrabelo/tatuscan/tools/tools/internal/i18n"
 )
 
+// Set by .make/build.sh via -ldflags "-X main.version=…".
+var version = "dev"
+
 func main() {
 	if err := run(); err != nil {
 		slog.Error("add-manual-inventory failed", "err", err)
@@ -41,6 +44,7 @@ func run() error {
 	if err := apiclient.SetLogLevel(*logLevel); err != nil {
 		return err
 	}
+	slog.Debug("build version", "version", version)
 	c := apiclient.New(apiclient.ResolveAPIBase(*apiBase), apiclient.ResolveToken())
 	return addmanual.Send(context.Background(), c, e, *dryRun)
 }

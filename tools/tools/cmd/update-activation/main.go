@@ -12,6 +12,9 @@ import (
 	"github.com/carlosrabelo/tatuscan/tools/tools/internal/updateactivation"
 )
 
+// Set by .make/build.sh via -ldflags "-X main.version=…".
+var version = "dev"
+
 func main() {
 	if err := run(); err != nil {
 		slog.Error("update-activation failed", "err", err)
@@ -28,6 +31,7 @@ func run() error {
 	if err := apiclient.SetLogLevel(*logLevel); err != nil {
 		return err
 	}
+	slog.Debug("build version", "version", version)
 	cat := i18n.FromEnv()
 	index, err := updateactivation.LoadReport(*csvPath)
 	if err != nil {
