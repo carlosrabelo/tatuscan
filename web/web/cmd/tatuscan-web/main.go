@@ -14,6 +14,9 @@ import (
 	"github.com/carlosrabelo/tatuscan/web/web/internal/httpui"
 )
 
+// Set by .make/build.sh via -ldflags "-X main.version=…".
+var version = "dev"
+
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -36,7 +39,8 @@ func main() {
 }
 
 func listen(srv *http.Server, logger *slog.Logger, cfg config.Config) {
-	logger.Info("tatuscan-web listening", "addr", srv.Addr, "api", cfg.APIURL, "offline_after", cfg.OfflineAfter.String())
+	logger.Info("tatuscan-web listening", "addr", srv.Addr, "api", cfg.APIURL,
+		"offline_after", cfg.OfflineAfter.String(), "version", version)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.Error("listen", "err", err)
 		os.Exit(1)
