@@ -112,7 +112,7 @@ make tools-build
 
 ## Configuration
 
-**Client** — `TATUSCAN_URL` (required), `TATUSCAN_INTERVAL` (default `60s`), optional `TATUSCAN_API_TOKEN` (Bearer for writes).
+**Client** — `TATUSCAN_URL` (required), `TATUSCAN_INTERVAL` (default `15m`), optional `TATUSCAN_API_TOKEN` (Bearer for writes).
 
 **API** — `TATUSCAN_PORT` (`8040`), `TATUSCAN_DB_DIR` / `TATUSCAN_DB_FILE` (default `/tmp/tatuscan.db`; Docker sets `/data`), `TIMEZONE` (`America/Cuiaba`), optional `TATUSCAN_API_TOKEN` (protects POST/PATCH/DELETE), `TATUSCAN_OFFLINE_AFTER` (default `2h`). `.env` is optional — missing file means built-in defaults. On startup the API rewrites legacy Flask/SQLAlchemy datetime strings to RFC3339Nano (idempotent); skip with `TATUSCAN_SKIP_LEGACY_DATETIME_MIGRATE=1` when the transition is done.
 

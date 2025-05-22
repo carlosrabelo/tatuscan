@@ -20,7 +20,7 @@ func main() {
 	log := setupLogger()
 	logLevel := flag.String("l", "", "Set log level (debug, info, warn, error, fatal)")
 	daemonMode := flag.Bool("d", false, "Run in daemon mode (repeat collection in cycles)")
-	intervalFlag := flag.String("interval", "", "Collection interval (ex.: 60s, 2m). Env: TATUSCAN_INTERVAL")
+	intervalFlag := flag.String("interval", "", "Collection interval (ex.: 15m, 60s). Env: TATUSCAN_INTERVAL")
 	flag.Parse()
 	_ = internal.LoadDotEnv(".env")
 	level := *logLevel

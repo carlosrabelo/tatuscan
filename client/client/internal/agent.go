@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	DefaultInterval    = 60 * time.Second
+	DefaultInterval    = 15 * time.Minute
 	DefaultServerURL   = "http://127.0.0.1:8040"
 	EnvServerURL       = "TATUSCAN_URL"
 	EnvCollectInterval = "TATUSCAN_INTERVAL"

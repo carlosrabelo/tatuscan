@@ -43,7 +43,7 @@ install -d -m 755 "$STAGE/etc/tatuscan"
 cat >"$STAGE/etc/tatuscan/agent.env" <<EOF
 # Conffile — edit after install if needed
 TATUSCAN_URL=${TATUSCAN_URL:-http://127.0.0.1:8040}
-TATUSCAN_INTERVAL=${TATUSCAN_INTERVAL:-60s}
+TATUSCAN_INTERVAL=${TATUSCAN_INTERVAL:-15m}
 EOF
 
 install -d -m 755 "$STAGE/lib/systemd/system"
