@@ -3,11 +3,49 @@
 package internal
 
 import (
+	"net"
 	"time"
 
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
 )
+
+// isEligibleIP reports whether ip may identify a host for collection:
+// non-loopback IPv4, or non-loopback non-link-local IPv6 (including ULA).
+func isEligibleIP(ip net.IP) bool {
+	if ip == nil || ip.IsLoopback() {
+		return false
+	}
+	if ip.To4() != nil {
+		return true
+	}
+	return ip.To16() != nil && !ip.IsLinkLocalUnicast()
+}
+
+// hasEligibleIP prefers the first eligible IPv4, else the first eligible IPv6.
+func hasEligibleIP(addrs []net.Addr) (string, bool) {
+	var firstV6 string
+	for _, addr := range addrs {
+		ipnet, ok := addr.(*net.IPNet)
+		if !ok {
+			continue
+		}
+		ip := ipnet.IP
+		if !isEligibleIP(ip) {
+			continue
+		}
+		if ip.To4() != nil {
+			return ip.String(), true
+		}
+		if firstV6 == "" {
+			firstV6 = ip.String()
+		}
+	}
+	if firstV6 != "" {
+		return firstV6, true
+	}
+	return "", false
+}
 
 // collectCommonMetrics collects CPU and memory usage
 func collectCommonMetrics() MachineMetrics {
