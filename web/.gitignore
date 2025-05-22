@@ -8,9 +8,11 @@ bin/*
 !bin/linux/
 bin/linux/*
 !bin/linux/.gitkeep
+dist/
 
 # Files
-tatuscan-web
+/tatuscan-web
+!/tatuscan-web/
 coverage.out
 coverage.html
 go.work

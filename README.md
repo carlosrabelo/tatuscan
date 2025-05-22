@@ -18,6 +18,7 @@ Distributed machine inventory: a Go agent posts host metrics to a Go API, and a 
 
 - **Go 1.24.2+** — language version pinned to the stable release of 2025-05-01; [download](https://go.dev/dl/)
 - **Docker** — optional, for `make stack-start`
+- **dpkg** — optional, for `make client-package`
 
 ## Installation
 
@@ -35,6 +36,25 @@ Binaries land in each component’s `bin/`:
 - `api/bin/linux/tatuscan-api`
 - `web/bin/linux/tatuscan-web`
 - `tools/bin/linux/` — `add-manual-inventory`, `delete-older`, `update-activation`
+
+### Agent (user-local)
+
+```bash
+make client-build
+make client-install          # ~/.local/bin
+make client-uninstall
+```
+
+### Agent (system-wide .deb + daemon)
+
+```bash
+make client-build
+make client-package          # client/dist/*.deb
+sudo dpkg -i client/dist/tatuscan_*.deb
+# postinst enables and starts tatuscan.service
+```
+
+Edit `/etc/tatuscan/agent.env` (conffile) for `TATUSCAN_URL` if needed, then `sudo systemctl restart tatuscan`.
 
 ## Quick Start
 
@@ -109,11 +129,12 @@ See each component’s `.env.example`.
 ```
 tatuscan/
 ├── Makefile          # orchestrator only
+├── AGENTS.md         # agent/scaffold contracts
 ├── client/           # agent (go.mod + client/ source tree)
 ├── api/              # REST + SQLite (go.mod + api/ source tree)
 ├── web/              # HTML panel (go.mod + web/ source tree)
 ├── tools/            # admin CLIs (go.mod + tools/ source tree)
-├── deploy/           # Docker / k8s / systemd
+├── deploy/           # Docker / k8s / systemd (api+web)
 └── .make/            # root helpers (local, clean, clean-bin, clean-db)
 ```
 
@@ -125,6 +146,9 @@ Each Go component keeps infrastructure at its root (`Makefile`, `.make/`, `bin/`
 make help             # list orchestrator targets
 make build            # build client + api + web + tools
 make test             # client + api + web + tools
+make quality          # fmt + lint in all Go components
+make client-install   # agent → ~/.local/bin
+make client-package   # agent .deb (unit + enable --now)
 make local-start      # API+web locally (no Docker)
 make local-test       # unit tests + HTTP smoke (no Docker)
 make local-stop       # stop processes started by make local-start
@@ -138,7 +162,7 @@ make -C web fmt
 make -C tools test
 ```
 
-Deploy details: [deploy/README.md](deploy/README.md).
+Deploy details (api+web): [deploy/README.md](deploy/README.md).
 
 Portuguese docs: [README-PT.md](README-PT.md).
 

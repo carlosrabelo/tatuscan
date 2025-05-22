@@ -2,7 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: build build-windows build-all clean fmt help install install-system lint run test uninstall
+.PHONY: build build-all build-windows clean deb fmt help install lint package quality run test uninstall
 
 BINARY_NAME := tatuscan
 export BINARY_NAME
@@ -35,13 +35,20 @@ lint: ## Run go vet
 fmt: ## Format code
 	@go fmt ./...
 
+quality: fmt lint ## Run all quality checks
+
 clean: ## Remove build artifacts
 	@go clean
-	@rm -rf bin/linux/* bin/windows/*
+	@rm -rf bin/linux/* bin/windows/* dist/
 	@touch bin/linux/.gitkeep bin/windows/.gitkeep 2>/dev/null || true
 
-install: build ## Install agent as system service
+install: ## Install to ~/.local/bin (requires prior make build)
 	@./.make/install.sh
 
-uninstall: ## Remove installed agent
+uninstall: ## Remove from ~/.local/bin (sudo only if needed)
 	@./.make/uninstall.sh
+
+package: ## Build a .deb into dist/ (requires prior make build; installs + enables daemon)
+	@./.make/package.sh
+
+deb: package ## Alias for package

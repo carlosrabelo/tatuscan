@@ -3,9 +3,10 @@ MAKEFLAGS += --no-print-directory
 .DEFAULT_GOAL := help
 
 .PHONY: api-build api-run api-test build clean clean-all clean-bin clean-db \
-	client-build client-build-all client-build-windows client-run client-test \
+	client-build client-build-all client-build-windows client-install \
+	client-package client-run client-test client-uninstall \
 	deploy-docker deploy-k8s deploy-systemd help local-start local-stop local-test \
-	stack-build stack-logs stack-start stack-stop test tools-build tools-test \
+	quality stack-build stack-logs stack-start stack-stop test tools-build tools-test \
 	web-build web-run web-test
 
 help: ## Show available targets
@@ -33,6 +34,15 @@ client-run: ## Run client agent locally
 client-test: ## Test client
 	@$(MAKE) -C client test
 
+client-install: ## Install client to ~/.local/bin (requires prior client-build)
+	@$(MAKE) -C client install
+
+client-uninstall: ## Remove client from ~/.local/bin
+	@$(MAKE) -C client uninstall
+
+client-package: ## Build client .deb (daemon unit + enable --now; requires prior client-build)
+	@$(MAKE) -C client package
+
 api-build: ## Build API
 	@$(MAKE) -C api build
 
@@ -58,6 +68,12 @@ tools-test: ## Test admin tools
 	@$(MAKE) -C tools test
 
 test: client-test api-test web-test tools-test ## Test all components
+
+quality: ## Run fmt + lint in all Go components
+	@$(MAKE) -C client quality
+	@$(MAKE) -C api quality
+	@$(MAKE) -C web quality
+	@$(MAKE) -C tools quality
 
 local-start: ## Start API+web locally (no Docker)
 	@./.make/local.sh start
@@ -86,7 +102,7 @@ deploy-docker: ## Deploy via Docker
 deploy-k8s: ## Deploy to Kubernetes
 	@$(MAKE) -C deploy quick-k8s
 
-deploy-systemd: ## Install systemd services
+deploy-systemd: ## Install systemd services (api+web)
 	@$(MAKE) -C deploy quick-systemd
 
 clean: ## Clean binaries and Docker cache

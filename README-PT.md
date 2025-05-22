@@ -18,6 +18,7 @@ Inventário distribuído de máquinas: um agente Go envia métricas do host para
 
 - **Go 1.24.2+** — versão de linguagem fixada na estável de 2025-05-01; [download](https://go.dev/dl/)
 - **Docker** — opcional, para `make stack-start`
+- **dpkg** — opcional, para `make client-package`
 
 ## Instalação
 
@@ -35,6 +36,25 @@ Binários em cada componente:
 - `api/bin/linux/tatuscan-api`
 - `web/bin/linux/tatuscan-web`
 - `tools/bin/linux/` — `add-manual-inventory`, `delete-older`, `update-activation`
+
+### Agente (usuário local)
+
+```bash
+make client-build
+make client-install          # ~/.local/bin
+make client-uninstall
+```
+
+### Agente (sistema via .deb + daemon)
+
+```bash
+make client-build
+make client-package          # client/dist/*.deb
+sudo dpkg -i client/dist/tatuscan_*.deb
+# o postinst habilita e inicia tatuscan.service
+```
+
+Edite `/etc/tatuscan/agent.env` (conffile) para `TATUSCAN_URL` se necessário e rode `sudo systemctl restart tatuscan`.
 
 ## Início Rápido
 
@@ -81,7 +101,7 @@ API (agentes e scripts):
 
 Rotas do painel: `/`, `/report/`, `/charts/`.
 
-Ferramentas de administração (mesma API; respeitam `TATUSCAN_URL` e `TATUSCAN_API_TOKEN`):
+Ferramentas admin (mesma API; respeitam `TATUSCAN_URL` e `TATUSCAN_API_TOKEN`):
 
 ```bash
 make tools-build
@@ -92,56 +112,60 @@ make tools-build
 
 ## Configuração
 
-**Cliente** — `TATUSCAN_URL` (obrigatório), `TATUSCAN_INTERVAL` (padrão `60s`), `TATUSCAN_API_TOKEN` opcional (Bearer para escrita).
+**Client** — `TATUSCAN_URL` (obrigatório), `TATUSCAN_INTERVAL` (default `60s`), `TATUSCAN_API_TOKEN` opcional (Bearer para escritas).
 
-**API** — `TATUSCAN_PORT` (`8040`), `TATUSCAN_DB_DIR` / `TATUSCAN_DB_FILE` (default `/tmp/tatuscan.db`; no Docker fica `/data`), `TIMEZONE` (`America/Cuiaba`), `TATUSCAN_API_TOKEN` opcional (protege POST/PATCH/DELETE), `TATUSCAN_OFFLINE_AFTER` (padrão `2h`). `.env` é opcional — sem o arquivo valem os defaults do binário. Na subida, a API regrava datas legadas do Flask/SQLAlchemy para RFC3339Nano (idempotente); desligue com `TATUSCAN_SKIP_LEGACY_DATETIME_MIGRATE=1` quando a transição terminar.
+**API** — `TATUSCAN_PORT` (`8040`), `TATUSCAN_DB_DIR` / `TATUSCAN_DB_FILE` (default `/tmp/tatuscan.db`; Docker usa `/data`), `TIMEZONE` (`America/Cuiaba`), `TATUSCAN_API_TOKEN` opcional (protege POST/PATCH/DELETE), `TATUSCAN_OFFLINE_AFTER` (default `2h`). `.env` é opcional — arquivo ausente usa defaults. Na subida a API reescreve datetimes legados Flask/SQLAlchemy para RFC3339Nano (idempotente); pule com `TATUSCAN_SKIP_LEGACY_DATETIME_MIGRATE=1` quando a transição terminar.
 
-**Web** — `TATUSCAN_PORT` (`8050`), `TATUSCAN_API_URL` (`http://127.0.0.1:8040`), `TATUSCAN_OFFLINE_AFTER` (padrão `2h`), `TATUSCAN_LANG` (`en` ou `pt`; padrão `en`) no `.env`.
+**Web** — `TATUSCAN_PORT` (`8050`), `TATUSCAN_API_URL` (`http://127.0.0.1:8040`), `TATUSCAN_OFFLINE_AFTER` (default `2h`), `TATUSCAN_LANG` (`en` ou `pt`; default `en`) no `.env`.
 
-**API** — mensagens JSON/HTML usam `TATUSCAN_LANG` do `.env` (`en` ou `pt`; padrão `en`).
+**API** — mensagens JSON/HTML usam `TATUSCAN_LANG` do `.env` (`en` ou `pt`; default `en`).
 
-**Ferramentas** — mensagens da CLI usam `TATUSCAN_LANG` do `.env` (`en` ou `pt`; padrão `en`).
+**Tools** — mensagens CLI usam `TATUSCAN_LANG` do `.env` (`en` ou `pt`; default `en`).
 
 Veja o `.env.example` de cada componente.
 
-## Estrutura do Projeto
+## Layout do Projeto
 
 ```
 tatuscan/
-├── Makefile          # orquestrador apenas
+├── Makefile          # só orquestrador
+├── AGENTS.md         # contratos para agentes/scaffold
 ├── client/           # agente (go.mod + árvore client/)
 ├── api/              # REST + SQLite (go.mod + árvore api/)
 ├── web/              # painel HTML (go.mod + árvore web/)
-├── tools/            # CLIs de administração (go.mod + árvore tools/)
-├── deploy/           # Docker / k8s / systemd
+├── tools/            # CLIs admin (go.mod + árvore tools/)
+├── deploy/           # Docker / k8s / systemd (api+web)
 └── .make/            # helpers da raiz (local, clean, clean-bin, clean-db)
 ```
 
-Cada componente Go mantém infraestrutura na raiz (`Makefile`, `.make/`, `bin/`, `go.mod`) e todo o código-fonte numa pasta homônima (`client/`, `api/`, `web/`, `tools/`). A raiz do git também tem `.make/` para scripts do monorepo.
+Cada componente Go mantém infra na raiz (`Makefile`, `.make/`, `bin/`, `go.mod`) e o código na pasta com o mesmo nome. A raiz do git também tem `.make/` para scripts do monorepo.
 
 ## Desenvolvimento
 
 ```bash
-make help             # lista alvos do orquestrador
+make help             # lista targets do orquestrador
 make build            # build client + api + web + tools
 make test             # client + api + web + tools
+make quality          # fmt + lint em todos os componentes Go
+make client-install   # agente → ~/.local/bin
+make client-package   # .deb do agente (unit + enable --now)
 make local-start      # API+web local (sem Docker)
 make local-test       # testes de unidade + smoke HTTP (sem Docker)
-make local-stop       # para processos iniciados por make local-start
-make api-run          # só a API
-make web-run          # só o painel
+make local-stop       # para processos do make local-start
+make api-run          # só API
+make web-run          # só painel
 make client-run       # agente local
 make stack-start      # Docker Compose api+web
-make -C client build  # build de um componente
+make -C client build  # build no componente
 make -C api test
 make -C web fmt
 make -C tools test
 ```
 
-Detalhes de deploy: [deploy/README.md](deploy/README.md).
+Deploy (api+web): [deploy/README-PT.md](deploy/README-PT.md).
 
-Documentação em inglês: [README.md](README.md).
+English docs: [README.md](README.md).
 
 ## Licença
 
-Este projeto está sob a GNU General Public License v3.0 — veja [LICENSE](LICENSE) para detalhes.
+Este projeto está sob a GNU General Public License v3.0 — veja [LICENSE](LICENSE).

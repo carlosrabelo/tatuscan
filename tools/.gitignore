@@ -8,11 +8,15 @@ bin/*
 !bin/linux/
 bin/linux/*
 !bin/linux/.gitkeep
+dist/
 
 # Files
-add-manual-inventory
-delete-older
-update-activation
+/add-manual-inventory
+!/add-manual-inventory/
+/delete-older
+!/delete-older/
+/update-activation
+!/update-activation/
 coverage.out
 coverage.html
 go.work

@@ -2,7 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: build clean fmt help lint run test
+.PHONY: build clean fmt help lint quality run test
 
 BINARY_NAME := tatuscan-api
 export BINARY_NAME
@@ -28,6 +28,8 @@ lint: ## Run go vet
 
 fmt: ## Format code
 	@go fmt ./...
+
+quality: fmt lint ## Run all quality checks
 
 clean: ## Remove build artifacts
 	@go clean

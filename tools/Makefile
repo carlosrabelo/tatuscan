@@ -2,7 +2,7 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: build clean fmt help lint test
+.PHONY: build clean fmt help lint quality test
 
 help: ## Show available targets
 	@echo "tatuscan tools - Available targets"
@@ -22,6 +22,8 @@ lint: ## Run go vet
 
 fmt: ## Format code
 	@go fmt ./...
+
+quality: fmt lint ## Run all quality checks
 
 clean: ## Remove build artifacts
 	@go clean

@@ -11,11 +11,13 @@ bin/linux/*
 !bin/linux/.gitkeep
 bin/windows/*
 !bin/windows/.gitkeep
+dist/
 build/
 
 # Files
-tatuscan
-tatuscan.exe
+/tatuscan
+!/tatuscan/
+/tatuscan.exe
 *.msi
 coverage.out
 coverage.html
