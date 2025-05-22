@@ -56,8 +56,8 @@ func TestIPv6OnlyScenarios(t *testing.T) {
 					},
 				},
 			},
-			expectError: true, // Current implementation requires IPv4
-			description: "Pure IPv6 environment should work but currently fails",
+			expectError: false,
+			description: "Pure IPv6 environment with global address is eligible",
 		},
 		{
 			name: "Dual-stack with IPv6 preference",
@@ -110,7 +110,7 @@ func TestIPv6OnlyScenarios(t *testing.T) {
 					},
 				},
 			},
-			expectError: true, // Multiple IPv6-only should work but currently fails
+			expectError: false,
 			description: "Multiple IPv6-only interfaces in datacenter scenario",
 		},
 		{
@@ -132,40 +132,24 @@ func TestIPv6OnlyScenarios(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Test individual interface validation logic
+			eligibleIface := false
 			for _, iface := range tt.interfaces {
-				t.Logf("Testing interface: %s, MAC: %s, Flags: %v",
-					iface.name, iface.hardwareAddr, iface.flags)
-
-				// Test MAC filtering
-				isLocallyAdmin := isLocallyAdministeredMAC(iface.hardwareAddr)
-				t.Logf("  Locally administered MAC: %v", isLocallyAdmin)
-
-				// Test virtual interface detection
-				isVirtual := isVirtualInterface(iface.name)
-				t.Logf("  Virtual interface: %v", isVirtual)
-
-				// Test addresses
-				for _, addr := range iface.addrs {
-					if ipnet, ok := addr.(*net.IPNet); ok {
-						isIPv4 := ipnet.IP.To4() != nil
-						isIPv6 := !isIPv4 && ipnet.IP.To16() != nil
-						isLoopback := ipnet.IP.IsLoopback()
-						isLinkLocal := ipnet.IP.IsLinkLocalUnicast()
-
-						t.Logf("  Address: %s, IPv4: %v, IPv6: %v, Loopback: %v, LinkLocal: %v",
-							ipnet.IP, isIPv4, isIPv6, isLoopback, isLinkLocal)
-					}
+				if isLocallyAdministeredMAC(iface.hardwareAddr) || isVirtualInterface(iface.name) {
+					continue
+				}
+				if (iface.flags&net.FlagUp) == 0 || (iface.flags&net.FlagLoopback) != 0 {
+					continue
+				}
+				if _, ok := hasEligibleIP(iface.addrs); ok {
+					eligibleIface = true
+					break
 				}
 			}
-
-			// Note: We can't easily test the full CollectData() function without mocking
-			// the net.Interfaces() call, but we can test the individual components
-			t.Logf("Scenario: %s", tt.description)
-			if tt.expectError {
-				t.Logf("  Expected to fail with current implementation (IPv4 requirement)")
-			} else {
-				t.Logf("  Expected to succeed")
+			if tt.expectError && eligibleIface {
+				t.Fatalf("%s: expected no eligible interface, got one (%s)", tt.name, tt.description)
+			}
+			if !tt.expectError && !eligibleIface {
+				t.Fatalf("%s: expected eligible interface, got none (%s)", tt.name, tt.description)
 			}
 		})
 	}
@@ -246,25 +230,19 @@ func mustParseMAC(s string) net.HardwareAddr {
 	return mac
 }
 
-// TestCurrentIPv4Requirement documents the current limitation
 func TestCurrentIPv4Requirement(t *testing.T) {
-	t.Run("Document IPv4 requirement limitation", func(t *testing.T) {
-		// This test documents the current behavior that requires IPv4
-		// In the future, this should be updated when IPv6-only support is added
-
-		t.Log("CURRENT LIMITATION: The CollectData() function requires IPv4 addresses")
-		t.Log("Lines that enforce this:")
-		t.Log("  Linux: collect_data_linux.go:133 - ipnet.IP.To4() != nil")
-		t.Log("  Windows: collect_data_windows.go:90 - ipnet.IP.To4() != nil")
-		t.Log("")
-		t.Log("TODO: Update these lines to also accept valid IPv6 global unicast addresses")
-		t.Log("Suggested fix: Accept addresses where:")
-		t.Log("  - IPv4: ipnet.IP.To4() != nil && !ipnet.IP.IsLoopback()")
-		t.Log("  - IPv6: ipnet.IP.To4() == nil && ipnet.IP.To16() != nil && !ipnet.IP.IsLoopback() && !ipnet.IP.IsLinkLocalUnicast()")
-
-		// This test always passes but serves as documentation
-		if testing.Short() {
-			t.Skip("Skipping documentation test in short mode")
+	t.Run("helper accepts global IPv6 and rejects link-local-only", func(t *testing.T) {
+		if ip, ok := hasEligibleIP([]net.Addr{createMockIPv6Addr("2001:db8::1")}); !ok || ip != "2001:db8::1" {
+			t.Fatalf("global ipv6: got %q ok=%v", ip, ok)
+		}
+		if ip, ok := hasEligibleIP([]net.Addr{createMockIPv6Addr("fe80::1")}); ok || ip != "" {
+			t.Fatalf("link-local: got %q ok=%v", ip, ok)
+		}
+		if ip, ok := hasEligibleIP([]net.Addr{
+			createMockIPv6Addr("2001:db8::2"),
+			createMockIPv4Addr("192.168.1.100"),
+		}); !ok || ip != "192.168.1.100" {
+			t.Fatalf("prefer ipv4: got %q ok=%v", ip, ok)
 		}
 	})
 }
