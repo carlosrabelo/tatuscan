@@ -61,6 +61,9 @@ func TestRootIndex(t *testing.T) {
 	if info["service"] != "tatuscan-api" {
 		t.Fatalf("service: %v", info["service"])
 	}
+	if info["version"] != "dev" {
+		t.Fatalf("version: %v", info["version"])
+	}
 
 	rr = httptest.NewRecorder()
 	req = httptest.NewRequest(http.MethodGet, "/", nil)

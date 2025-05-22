@@ -15,6 +15,9 @@ import (
 	"github.com/carlosrabelo/tatuscan/api/api/internal/store"
 )
 
+// Set by -ldflags "-X main.version=…" at build time.
+var version = "dev"
+
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -63,6 +66,7 @@ func main() {
 		APIToken:     cfg.APIToken,
 		OfflineAfter: cfg.OfflineAfter,
 		DefaultLang:  cfg.DefaultLang,
+		Version:      version,
 	})
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
@@ -78,7 +82,7 @@ func main() {
 
 func listen(srv *http.Server, logger *slog.Logger, cfg config.Config) {
 	logger.Info("tatuscan-api listening", "addr", srv.Addr, "db", cfg.DBPath, "tz", cfg.Timezone,
-		"auth", cfg.APIToken != "", "offline_after", cfg.OfflineAfter.String())
+		"auth", cfg.APIToken != "", "offline_after", cfg.OfflineAfter.String(), "version", version)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.Error("listen", "err", err)
 		os.Exit(1)

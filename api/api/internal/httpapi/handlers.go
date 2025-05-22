@@ -17,6 +17,7 @@ func (s *Server) root(w http.ResponseWriter, r *http.Request) {
 	cat := s.cat()
 	info := map[string]any{
 		"service": "tatuscan-api",
+		"version": s.version,
 		"panel":   "http://127.0.0.1:8050/",
 		"lang":    cat.Locale(),
 		"endpoints": []string{

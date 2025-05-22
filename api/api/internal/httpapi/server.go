@@ -22,6 +22,7 @@ type Server struct {
 	apiToken     string
 	offlineAfter time.Duration
 	defaultLang  string
+	version      string
 }
 
 // Options configures optional API server behavior.
@@ -29,12 +30,17 @@ type Options struct {
 	APIToken     string
 	OfflineAfter time.Duration
 	DefaultLang  string
+	Version      string
 }
 
 // New creates the API server and registers routes.
 func New(svc *service.Service, st *store.Store, logger *slog.Logger, opts Options) *Server {
 	if opts.OfflineAfter <= 0 {
 		opts.OfflineAfter = 2 * time.Hour
+	}
+	ver := strings.TrimSpace(opts.Version)
+	if ver == "" {
+		ver = "dev"
 	}
 	s := &Server{
 		svc:          svc,
@@ -44,6 +50,7 @@ func New(svc *service.Service, st *store.Store, logger *slog.Logger, opts Option
 		apiToken:     strings.TrimSpace(opts.APIToken),
 		offlineAfter: opts.OfflineAfter,
 		defaultLang:  i18n.Parse(opts.DefaultLang),
+		version:      ver,
 	}
 	s.routes()
 	return s
