@@ -13,6 +13,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Set by .make/build.sh via -ldflags "-X main.version=…".
+var version = "dev"
+
 func main() {
 	log := setupLogger()
 	logLevel := flag.String("l", "", "Set log level (debug, info, warn, error, fatal)")
@@ -25,6 +28,7 @@ func main() {
 		level = os.Getenv("TATUSCAN_LOG_LEVEL")
 	}
 	applyLogLevel(log, level)
+	log.Debugf("tatuscan version %s", version)
 
 	internal.EnsureSingleInstance()
 	serverURL := internal.GetServerURL()
