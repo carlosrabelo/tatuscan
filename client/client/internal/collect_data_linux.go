@@ -122,26 +122,20 @@ func CollectData() (MachineInfo, error) {
 			continue
 		}
 
-		// Valid IP (IPv4 non-loopback)
+		// Eligible IP (IPv4 or non-link-local IPv6)
 		addrs, err := iface.Addrs()
 		if err != nil {
 			Log.Errorf("Failed to collect addresses from interface %s: %v", iface.Name, err)
 			continue
 		}
-		hasValidIP := false
-		for _, addr := range addrs {
-			if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() && ipnet.IP.To4() != nil {
-				hasValidIP = true
-				if ipAddress == "" {
-					ipAddress = ipnet.IP.String()
-					Log.Debugf("Selected interface %s with IP %s", iface.Name, ipAddress)
-				}
-				break
-			}
-		}
+		selectedIP, hasValidIP := hasEligibleIP(addrs)
 		if !hasValidIP {
-			Log.Debugf("Interface %s ignored: no valid IPv4", iface.Name)
+			Log.Debugf("Interface %s ignored: no eligible IP", iface.Name)
 			continue
+		}
+		if ipAddress == "" {
+			ipAddress = selectedIP
+			Log.Debugf("Selected interface %s with IP %s", iface.Name, ipAddress)
 		}
 
 		// MAC collected
@@ -156,7 +150,7 @@ func CollectData() (MachineInfo, error) {
 	}
 
 	if ipAddress == "" {
-		Log.Warnf("No valid IPv4 address found")
+		Log.Warnf("No eligible IP address found")
 	}
 	info.IP = ipAddress
 
