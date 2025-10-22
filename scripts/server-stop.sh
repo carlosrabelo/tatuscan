@@ -15,5 +15,12 @@ COMPOSE="${COMPOSE:-docker compose}"
 
 echo "→ Stopping server..."
 cd "$SERVER_DIR"
-APP_IMAGE="$SERVER_FULL" PORT="$SERVER_PORT" $COMPOSE down
+
+# Remove any existing containers with the same name (including dead ones)
+if docker ps -a --format '{{.Names}}' | grep -q '^tatuscand$'; then
+    echo "  Removing existing tatuscand container..."
+    docker rm -f tatuscand 2>/dev/null || true
+fi
+
+APP_IMAGE="$SERVER_FULL" PORT="$SERVER_PORT" $COMPOSE down --remove-orphans
 echo "✓ Server stopped"
