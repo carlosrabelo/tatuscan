@@ -109,8 +109,8 @@ server-02,2024-02-20,HP ProLiant DL380
 Converts data from legacy database format to the current TatuScan schema. Handles timezone normalization (America/Cuiaba) and schema updates.
 
 **Fixed Paths** (edit script to change):
-- **Source**: `/tmp/tatuscand_legacy.db` (legacy SQLite database)
-- **Destination**: `/tmp/tatuscand_new.db` (new format database)
+- **Source**: `/tmp/tatuscan_legacy.db` (legacy SQLite database)
+- **Destination**: `/tmp/tatuscan_new.db` (new format database)
 
 **Usage**:
 ```bash

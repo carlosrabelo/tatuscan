@@ -16,7 +16,7 @@ echo ""
 echo "→ Cleaning Docker resources for tatuscan..."
 cd "$SCRIPT_DIR/../server"
 docker compose down --rmi local --volumes 2>/dev/null || true
-docker image rm carlosrabelo/tatuscand:latest 2>/dev/null || true
+docker image rm carlosrabelo/tatuscan:latest 2>/dev/null || true
 echo "  ✓ Docker resources cleaned (project-specific only)"
 
 echo ""

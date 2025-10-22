@@ -1,10 +1,10 @@
 services:
-  tatuscand:
+  tatuscan:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${APP_IMAGE:-carlosrabelo/tatuscand:latest}
-    container_name: tatuscand
+    image: ${APP_IMAGE:-carlosrabelo/tatuscan:latest}
+    container_name: tatuscan
     env_file: .env
     environment:
       - TATUSCAN_PORT=${PORT:-8040}
@@ -12,7 +12,7 @@ services:
     ports:
       - "${PORT:-8040}:${PORT:-8040}"
     volumes:
-      - tatuscand_data:/data
+      - tatuscan_data:/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,os; urllib.request.urlopen(f'http://127.0.0.1:{os.getenv(\"TATUSCAN_PORT\",\"8040\")}/api/health'); print('ok')"]
@@ -21,4 +21,4 @@ services:
       retries: 3
 
 volumes:
-  tatuscand_data:
+  tatuscan_data:
