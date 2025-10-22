@@ -23,5 +23,5 @@ cd "$SERVER_DIR"
 source .venv/bin/activate
 export PYTHONPATH="$SERVER_DIR/src"
 export PORT="$SERVER_PORT"
-export TATUSCAND_PORT="$SERVER_PORT"
+export TATUSCAN_PORT="$SERVER_PORT"
 python run.py

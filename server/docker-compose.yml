@@ -7,7 +7,7 @@ services:
     container_name: tatuscand
     env_file: .env
     environment:
-      - TATUSCAND_PORT=${PORT:-8040}
+      - TATUSCAN_PORT=${PORT:-8040}
       - PYTHONUNBUFFERED=1
     ports:
       - "${PORT:-8040}:${PORT:-8040}"
@@ -15,7 +15,7 @@ services:
       - tatuscand_data:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,os; urllib.request.urlopen(f'http://127.0.0.1:{os.getenv(\"TATUSCAND_PORT\",\"8040\")}/api/health'); print('ok')"]
+      test: ["CMD", "python", "-c", "import urllib.request,os; urllib.request.urlopen(f'http://127.0.0.1:{os.getenv(\"TATUSCAN_PORT\",\"8040\")}/api/health'); print('ok')"]
       interval: 30s
       timeout: 5s
       retries: 3
