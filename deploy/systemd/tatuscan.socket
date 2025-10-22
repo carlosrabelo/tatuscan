@@ -1,0 +1,10 @@
+[Unit]
+Description=TatuScan Server Socket
+PartOf=tatuscan.service
+
+[Socket]
+ListenStream=8040
+BindIPv6Only=both
+
+[Install]
+WantedBy=sockets.target

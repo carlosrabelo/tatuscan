@@ -1,0 +1,36 @@
+services:
+  tatuscan:
+    build:
+      context: ../../server
+      dockerfile: ../deploy/docker/Dockerfile
+    image: ${APP_IMAGE:-carlosrabelo/tatuscan:latest}
+    container_name: tatuscan
+    env_file: ../server/.env
+    ports:
+      - "${HOST_PORT:-8040}:${TATUSCAN_PORT:-8040}"
+    volumes:
+      - tatuscan_data:/data   # persistência do SQLite (TATUSCAN_DB_DIR)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,os; urllib.request.urlopen(f'http://127.0.0.1:{os.getenv(\"TATUSCAN_PORT\",\"8040\")}/api/health'); print('ok')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+
+  # Descomente para usar Postgres localmente
+  # postgres:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_USER: tatuscan
+  #     POSTGRES_PASSWORD: tatuscan
+  #     POSTGRES_DB: tatuscan
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+volumes:
+  tatuscan_data:
+  # pg_data:

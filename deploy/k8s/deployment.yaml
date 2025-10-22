@@ -1,0 +1,48 @@
+# Deployment for TatuScan server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tatuscan
+  namespace: tatuscan
+  labels:
+    app: tatuscan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tatuscan
+  template:
+    metadata:
+      labels:
+        app: tatuscan
+    spec:
+      containers:
+      - name: tatuscan
+        image: carlosrabelo/tatuscan:latest
+        ports:
+        - containerPort: 8040
+        envFrom:
+        - configMapRef:
+            name: tatuscan-config
+        - secretRef:
+            name: tatuscan-secrets
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8040
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: tatuscan-data-pvc

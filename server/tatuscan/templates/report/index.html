@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Relatório — TatuScanD{% endblock %}
+{% block header %}Relatório{% endblock %}
+
+{% block extra_head %}
+<style>
+  th a.sort-link { color: inherit; display: inline-flex; align-items: center; gap: 6px; }
+  th a.sort-link:hover { text-decoration: underline; }
+  .sort-indicator { font-size: 0.8em; color: var(--muted); opacity: 0.75; }
+  th a.sort-link:hover .sort-indicator { color: #2563eb; opacity: 1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <p class="meta">Total de registros: {{ inventories|length }}</p>
+
+  {% if inventories %}
+  <table>
+    <thead>
+      <tr>
+        {# Helper to toggle direction per column #}
+        {% set cur_sort = sort or 'hostname' %}
+        {% set cur_dir  = direction or 'asc' %}
+        {% macro sort_link(label, key) -%}
+          {%- set next_dir = 'desc' if (cur_sort == key and cur_dir == 'asc') else 'asc' -%}
+          <a class="sort-link" href="{{ url_for('report.report_index', sort=key, dir=next_dir) }}">
+            <span class="sort-label">{{ label }}</span>
+            {%- if cur_sort == key -%}
+              <span class="sort-indicator" aria-hidden="true">{{ '▲' if cur_dir == 'asc' else '▼' }}</span>
+            {%- endif -%}
+          </a>
+        {%- endmacro %}
+
+        <th>{{ sort_link('Hostname', 'hostname') }}</th>
+        <th>{{ sort_link('SO', 'os') }}</th>
+        <th>{{ sort_link('Versão', 'os_version') }}</th>
+        <th>{{ sort_link('Criado em', 'created_at') }}</th>
+        <th>{{ sort_link('Atualizado em', 'updated_at') }}</th>
+        <th>{{ sort_link('Ativação', 'computer_activation') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inv in inventories %}
+      <tr>
+        <td>{{ inv.hostname }}</td>
+        <td>{{ inv.os }}</td>
+        <td class="muted">{{ inv.os_version or "-" }}</td>
+        <td class="muted">{{ inv.created_at and inv.created_at.strftime("%Y-%m-%d %H:%M") or "-" }}</td>
+        <td class="muted">{{ inv.updated_at and inv.updated_at.strftime("%Y-%m-%d %H:%M") or "-" }}</td>
+        <td class="muted">{{ inv.computer_activation and inv.computer_activation.strftime("%Y-%m-%d %H:%M") or "-" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty">Nenhum inventário registrado.</div>
+  {% endif %}
+</div>
+{% endblock %}

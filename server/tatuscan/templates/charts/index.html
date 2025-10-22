@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Gráficos — TatuScanD{% endblock %}
+{% block header %}Gráficos{% endblock %}
+
+{% block extra_head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <style>
+    .charts { display:flex; flex-wrap:wrap; gap:20px; }
+    .chart-card { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,.06); flex:1 1 360px; min-width:300px; }
+    .chart-card h2 { margin:0 0 12px; font-size:1.1rem; border-bottom:2px solid #3498db; padding-bottom:6px; }
+    canvas { width:100% !important; height:320px !important; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="charts">
+  <div class="chart-card">
+    <h2>Sistemas Operacionais</h2>
+    <canvas id="osChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <h2>Versões (Top {{ top_n }})</h2>
+    <canvas id="verChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <h2>Idade por Faixas (meses)</h2>
+    <canvas id="ageChart"></canvas>
+  </div>
+</div>
+
+<script>
+  const osLabels = {{ os_labels|tojson }};
+  const osValues = {{ os_values|tojson }};
+  const verLabels = {{ ver_labels|tojson }};
+  const verValues = {{ ver_values|tojson }};
+  const ageLabels = {{ age_labels|tojson }};
+  const ageValues = {{ age_values|tojson }};
+
+  const commonOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+    scales: {
+      x: { ticks: { precision: 0 } },
+      y: { ticks: { precision: 0 } }
+    }
+  };
+
+  // OS: barras horizontais
+  new Chart(document.getElementById('osChart'), {
+    type: 'bar',
+    data: {
+      labels: osLabels,
+      datasets: [{
+        data: osValues,
+        backgroundColor: '#2563eb',
+        borderRadius: 6,
+      }]
+    },
+    options: { ...commonOptions, indexAxis: 'y' }
+  });
+
+  // Versões: barras horizontais
+  new Chart(document.getElementById('verChart'), {
+    type: 'bar',
+    data: {
+      labels: verLabels,
+      datasets: [{
+        data: verValues,
+        backgroundColor: '#7c3aed',
+        borderRadius: 6,
+      }]
+    },
+    options: { ...commonOptions, indexAxis: 'y' }
+  });
+
+  // Idades por faixa: barras verticais
+  new Chart(document.getElementById('ageChart'), {
+    type: 'bar',
+    data: {
+      labels: ageLabels,
+      datasets: [{
+        data: ageValues,
+        backgroundColor: '#059669',
+        borderRadius: 6,
+      }]
+    },
+    options: commonOptions
+  });
+</script>
+{% endblock %}
+

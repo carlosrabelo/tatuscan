@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - TatuScanD{% endblock %}
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="box">
+    <h2>Sistemas Operacionais</h2>
+    {% if os_list %}
+      <table>
+        <thead>
+          <tr><th>Nome</th><th>Quantidade</th></tr>
+        </thead>
+        <tbody>
+          {% for item in os_list %}
+          <tr>
+            <td>{{ item.os or '-' }}</td>
+            <td>{{ item.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Nenhum sistema registrado</p>
+    {% endif %}
+  </div>
+
+  <div class="box">
+    <h2>Versões dos Sistemas</h2>
+    {% if version_list %}
+      <table>
+        <thead>
+          <tr><th>Nome</th><th>Quantidade</th></tr>
+        </thead>
+        <tbody>
+          {% for item in version_list %}
+          <tr>
+            <td>{{ item.os_version or '-' }}</td>
+            <td>{{ item.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Nenhuma versão registrada</p>
+    {% endif %}
+  </div>
+
+  <div class="box">
+    <h2>Estatísticas de Idade (meses)</h2>
+    {% if age_stats.count > 0 %}
+      <table>
+        <tbody>
+          <tr><th>Total</th><td>{{ age_stats.count }}</td></tr>
+          <tr><th>Média</th><td>{{ age_stats.average }}</td></tr>
+          <tr><th>Mínima</th><td>{{ age_stats.min }}</td></tr>
+          <tr><th>Máxima</th><td>{{ age_stats.max }}</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin:16px 0 8px; font-size:1rem;">Distribuição</h3>
+      <table>
+        <thead><tr><th>Faixa (meses)</th><th>Qtd.</th></tr></thead>
+        <tbody>
+          {% for r in age_ranges %}
+          <tr>
+            <td>
+              {% if r.max == 9999 %}&gt;{{ r.min }}
+              {% else %}{{ r.min }}–{{ r.max }}{% endif %}
+            </td>
+            <td>{{ r.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Nenhum computador com data de ativação registrada</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

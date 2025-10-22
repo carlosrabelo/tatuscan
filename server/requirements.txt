@@ -1,0 +1,8 @@
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+gunicorn==22.0.0
+supervisor==4.2.5
+pytz==2024.2
+python-dotenv==1.1.1
+psycopg2-binary==2.9.9
+PyMySQL==1.1.1

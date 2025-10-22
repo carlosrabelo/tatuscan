@@ -1,0 +1,14 @@
+# ConfigMap for TatuScan configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tatuscan-config
+  namespace: tatuscan
+data:
+  TATUSCAN_PORT: "8040"
+  GUNICORN_WORKERS: "3"
+  GUNICORN_THREADS: "2"
+  GUNICORN_TIMEOUT: "30"
+  LOG_LEVEL: "info"
+  TATUSCAN_DB_DIR: "/data"
+  TATUSCAN_TIMEZONE: "America/Cuiaba"

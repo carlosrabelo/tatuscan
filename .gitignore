@@ -1,0 +1,47 @@
+# TatuScan Root .gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+bin/*
+!bin/.gitkeep
+!bin/linux/
+!bin/windows/
+bin/linux/*
+!bin/linux/.gitkeep
+bin/windows/*
+!bin/windows/.gitkeep
+*.exe
+*.msi
+*.deb
+*.rpm
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Data directory (local database)
+data/
+
+# Component-specific ignores are in subdirectories:
+# - client/.gitignore (Go-specific)
+# - server/.gitignore (Python-specific)
+# - deploy/docker/.dockerignore

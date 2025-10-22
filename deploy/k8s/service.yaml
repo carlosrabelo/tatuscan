@@ -1,0 +1,19 @@
+# Service for TatuScan server
+apiVersion: v1
+kind: Service
+metadata:
+  name: tatuscan-service
+  namespace: tatuscan
+  labels:
+    app: tatuscan
+    component: server
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8040
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: tatuscan
+    component: server

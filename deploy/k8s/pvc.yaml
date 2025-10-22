@@ -1,0 +1,17 @@
+# Persistent Volume Claim for TatuScan data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tatuscan-data-pvc
+  namespace: tatuscan
+  labels:
+    app: tatuscan
+    component: storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # Uncomment and adjust for your storage class
+  # storageClassName: standard

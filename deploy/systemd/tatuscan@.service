@@ -1,0 +1,22 @@
+[Unit]
+Description=TatuScan Server Service
+After=network.target
+
+[Service]
+Type=simple
+User=tatuscan
+WorkingDirectory=/opt/tatuscan
+Environment=PYTHONPATH=/opt/tatuscan/src
+Environment=TATUSCAN_PORT=8040
+Environment=TATUSCAN_DB_DIR=/var/lib/tatuscan
+Environment=LOG_LEVEL=info
+ExecStart=/opt/tatuscan/venv/bin/gunicorn 'tatuscan:create_app()' \
+    --workers 2 \
+    --bind "0.0.0.0:${TATUSCAN_PORT}" \
+    --timeout 30 \
+    --log-level ${LOG_LEVEL}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
